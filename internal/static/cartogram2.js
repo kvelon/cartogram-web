@@ -1059,12 +1059,16 @@ class CartMap {
         const gridPath = getGridPath(this.versions[sysname].legendWidth, this.width, this.height)
 
         const mapSVG = d3.select("#" + mapSVGID)
-                      .append("path")
-                      .attr("d", gridPath)
-                      .attr("fill", "none")
-                      .attr("stroke", "#5A5A5A")  // blue: #3474eb
-                      .attr("stroke-width", "2px")
-                      .attr("stroke-opacity", 0.4)
+
+        mapSVG.select("#grid-path").remove()  // Remove existing grid
+
+        mapSVG.append("path")
+              .attr("id", "grid-path")
+              .attr("d", gridPath)
+              .attr("fill", "none")
+              .attr("stroke", "#5A5A5A")  // blue: #3474eb
+              .attr("stroke-width", "2px")
+              .attr("stroke-opacity", 0.4)
     }
 
     /**
