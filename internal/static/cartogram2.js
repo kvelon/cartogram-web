@@ -912,13 +912,33 @@ class CartMap {
         legendSVG.selectAll('*').remove();
 
         // Create child nodes of SVG element.
-        const legendSquare = legendSVG.append('rect')
-                                        .attr('id', 'legend-square')
+        const legendSquareA = legendSVG.append('rect')
+                                        //.attr('id', 'legend-square')
                                         .attr('x', '20') // Padding of 20px on the left
                                         .attr('y', '5')
                                         .attr('fill', 'none')
-                                        .attr('stroke', '#5A5A5A')
-                                        .attr("stroke-opacity", 0.4)
+                                        .attr('stroke', '#AAAAAA')
+                                        //.attr("stroke-opacity", 0.4)
+                                        .attr("stroke-width", "2px")
+                                        .attr('width', '30')
+                                        .attr('height', '30')
+
+        const legendSquareB = legendSVG.append('rect')
+                                        .attr('x', '20') // Padding of 20px on the left
+                                        .attr('y', '5')
+                                        .attr('fill', 'none')
+                                        .attr('stroke', '#AAAAAA')
+                                       // .attr("stroke-opacity", 0.4)
+                                        .attr("stroke-width", "2px")
+                                        .attr('width', '30')
+                                        .attr('height', '30')
+
+        const legendSquareC = legendSVG.append('rect')
+                                        .attr('x', '20') // Padding of 20px on the left
+                                        .attr('y', '5')
+                                        .attr('fill', 'none')
+                                        .attr('stroke', '#AAAAAA')
+                                       // .attr("stroke-opacity", 0.4)
                                         .attr("stroke-width", "2px")
                                         .attr('width', '30')
                                         .attr('height', '30')
@@ -941,52 +961,79 @@ class CartMap {
         const [versionArea, versionTotalValue] = this.getTotalAreasAndValuesForVersion(sysname);
         const valuePerPixel = versionTotalValue / (versionArea*scaleX*scaleY);
 
-        // We want the square to be in the whereabouts of 30px by 30 px.
-        let width = 30;
-        let valuePerSquare = valuePerPixel * width * width;
+        // We want the smallest square to be in the whereabouts of 30px by 30 px.
+        let widthA = 30;
+        let widthB = 30;
+        let widthC = 30;
+        let valuePerSquare = valuePerPixel * widthA * widthA;
 
         // Declare and assign variables for valuePerSquare's power of 10 and "nice number".
         let scalePowerOf10 = Math.floor(Math.log10(valuePerSquare));
-        let scaleNiceNumber = 99;
+        let scaleNiceNumberA = 99;
+        let scaleNiceNumberB = 99;
+        let scaleNiceNumberC = 99;
+
 
         // We find the "nice number" that is closest to valuePerSquare's
         const valueFirstNumber = valuePerSquare / Math.pow(10, scalePowerOf10);
-        let valueDiff = Math.abs(valueFirstNumber - scaleNiceNumber);
+        let valueDiff = Math.abs(valueFirstNumber - scaleNiceNumberA);
 
         const niceNumbers = [1, 2, 5, 10];
         niceNumbers.forEach(function(n) {
            if (Math.abs(valueFirstNumber - n) < valueDiff) {
                valueDiff = Math.abs(valueFirstNumber - n);
-               scaleNiceNumber = n;
+               scaleNiceNumberA = n;
            }
         });
 
+        if (scaleNiceNumberA == 1) {
+            scaleNiceNumberB = 2
+            scaleNiceNumberC = 5
+        } else if (scaleNiceNumberA == 2) {
+            scaleNiceNumberB = 5
+            scaleNiceNumberC = 10
+        } else if (scaleNiceNumberA == 5) {
+            scaleNiceNumberB = 10
+            scaleNiceNumberC = 20
+        } else {
+            scaleNiceNumberB = 20
+            scaleNiceNumberC = 50
+        }
+
         // Adjust width of square according to chosen nice number.
-        width *= Math.sqrt(scaleNiceNumber * Math.pow(10, scalePowerOf10) / valuePerSquare);
-        legendSquare.attr("width", width.toString() +"px")
-                    .attr("height", width.toString() +"px");
+        widthA *= Math.sqrt(scaleNiceNumberA * Math.pow(10, scalePowerOf10) / valuePerSquare);
+        legendSquareA.attr("width", widthA.toString() +"px")
+                    .attr("height", widthA.toString() +"px");
+
+        widthB *= Math.sqrt(scaleNiceNumberB * Math.pow(10, scalePowerOf10) / valuePerSquare);
+        legendSquareB.attr("width", widthB.toString() +"px")
+                    .attr("height", widthB.toString() +"px");
+
+        widthC *= Math.sqrt(scaleNiceNumberC * Math.pow(10, scalePowerOf10) / valuePerSquare);
+        legendSquareC.attr("width", widthC.toString() +"px")
+                    .attr("height", widthC.toString() +"px");
 
         // Set "x" and "y" of legend text relative to square's width
-        legendText.attr('x', (15+width+10).toString() + 'px')
-                  .attr('y', (5 + width*0.5).toString() + 'px');
+        legendText.attr('x', (15+widthC+10).toString() + 'px')
+                  .attr('y', (5 + widthC*0.5).toString() + 'px');
 
         // Set legend text
         const largeNumberNames = {6: " million", 9: " billion"}
 
         if (scalePowerOf10 > -4 && scalePowerOf10 < 12) {
             if (scalePowerOf10 in largeNumberNames)
-                legendText.text("= " + scaleNiceNumber + " " + largeNumberNames[scalePowerOf10] + " " + unit);
+                legendText.text("= " + scaleNiceNumberA + " " + largeNumberNames[scalePowerOf10] + " " + unit);
             else if (scalePowerOf10 > 9)
-                legendText.text("= " + (scaleNiceNumber * Math.pow(10, scalePowerOf10-9) + " billion " + unit));
+                legendText.text("= " + (scaleNiceNumberA * Math.pow(10, scalePowerOf10-9) + " billion " + unit));
             else if (scalePowerOf10 > 6)
-                legendText.text("= " + (scaleNiceNumber * Math.pow(10, scalePowerOf10-6) + " million " + unit));
+                legendText.text("= " + (scaleNiceNumberA * Math.pow(10, scalePowerOf10-6) + " million " + unit));
             else
-                legendText.text("= " + (scaleNiceNumber * Math.pow(10, scalePowerOf10)).toLocaleString().split(',').join(' ') + " " + unit);
+                legendText.text("= " + (scaleNiceNumberA * Math.pow(10, scalePowerOf10)).toLocaleString().split(',').join(' ') + " " + unit);
         }
         // If scalePowerOf10 is too extreme, we use scientific notation
         else {
             legendText.append('tspan')
-                .html("= " + scaleNiceNumber + " &#xD7; 10")
+                .html("= " + scaleNiceNumberA + " &#xD7; 10")
             legendText.append('tspan')
                 .text(scalePowerOf10)
                 .style("font-size", "10px")
@@ -998,7 +1045,7 @@ class CartMap {
         }
 
         // Set "y" of total value text to be 20px below the top of the square.
-        const total_value_Y = 5 + parseInt(width) + 20;
+        const total_value_Y = 5 + parseInt(widthC) + 20;
         totalValue.attr("y", total_value_Y.toString() + "px");
 
         // Set total value text.
@@ -1017,7 +1064,7 @@ class CartMap {
         // If totalScalePowerOfTen is too extreme, we use scientific notation
         else {
             totalValue.append('tspan')
-                        .html("Total: " + (versionTotalValue/Math.pow(10, totalScalePowerOfTen)).toPrecision(3) + " &#xD7; 10")
+                        .html("Total : " + (versionTotalValue/Math.pow(10, totalScalePowerOfTen)).toPrecision(3) + " &#xD7; 10")
             totalValue.append('tspan')
                         .text(totalScalePowerOfTen)
                         .style("font-size", "10px")
@@ -1029,10 +1076,10 @@ class CartMap {
         }
 
         // Verify if legend is accurate
-        this.verifyLegend(sysname, width, scaleNiceNumber * Math.pow(10, scalePowerOf10));
+        this.verifyLegend(sysname, widthA, scaleNiceNumberA * Math.pow(10, scalePowerOf10));
 
         // Update version's MapVersionData
-        this.versions[sysname].legendWidth = width;
+        this.versions[sysname].legendWidth = widthA;
     }
 
     /**
