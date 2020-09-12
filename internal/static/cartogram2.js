@@ -445,11 +445,12 @@ class MapVersion {
      * @param {Extrema} extrema Extrema for this map version
      * @param {Labels} labels The labels of the map version. Optional.
      */
-    constructor(name, extrema, labels=null, world = false) {
+    constructor(name, extrema, labels=null, world = false, legendWidth=50) {
         this.name = name;
         this.extrema = extrema;
         this.labels = labels;
         this.world = world;
+        this.legendWidth = legendWidth
     }
 }
 
@@ -901,8 +902,8 @@ class CartMap {
     /**
      * The following draws the legend for each map
      * @param {string} sysname The sysname of the map version
+     * @param {string} legendSVGID The map's legend SVG element's ID
      */
-
     drawLegend(sysname, legendSVGID){
 
         const legendSVG = d3.select('#' + legendSVGID);
@@ -913,9 +914,12 @@ class CartMap {
         // Create child nodes of SVG element.
         const legendSquare = legendSVG.append('rect')
                                         .attr('id', 'legend-square')
-                                        .attr('x', '0')
+                                        .attr('x', '20') // Padding of 20px on the left
                                         .attr('y', '5')
-                                        .attr('fill', '#5A5A5A')
+                                        .attr('fill', 'none')
+                                        .attr('stroke', '#5A5A5A')
+                                        .attr("stroke-opacity", 0.4)
+                                        .attr("stroke-width", "2px")
                                         .attr('width', '30')
                                         .attr('height', '30')
 
@@ -926,7 +930,7 @@ class CartMap {
 
         const totalValue = legendSVG.append('text')
                                         .attr('id', 'total-text')
-                                        .attr('x', '0')
+                                        .attr('x', '20')// Padding of 20px on the left
                                         .attr('fill', '#5A5A5A');
 
         // Get unit for the map that we wish to draw legend for.
@@ -963,7 +967,7 @@ class CartMap {
                     .attr("height", width.toString() +"px");
 
         // Set "x" and "y" of legend text relative to square's width
-        legendText.attr('x', (width+10).toString() + 'px')
+        legendText.attr('x', (15+width+10).toString() + 'px')
                   .attr('y', (5 + width*0.5).toString() + 'px');
 
         // Set legend text
@@ -1026,6 +1030,41 @@ class CartMap {
 
         // Verify if legend is accurate
         this.verifyLegend(sysname, width, scaleNiceNumber * Math.pow(10, scalePowerOf10));
+
+        // Update version's MapVersionData
+        this.versions[sysname].legendWidth = width;
+    }
+
+    /**
+     * drawGridLines appends grid lines to the map
+     * @param {string} sysname A unique system identifier for the version
+     * @param {string} mapSVGID The map's SVG element's ID
+     */
+    drawGridLines(sysname, mapSVGID) {
+
+        const getGridPath = function(gridWidth, width, height) {
+            let path = ""
+
+            for (let x = 20; x < width; x += gridWidth) {  // Starts at x=20 to align with legend square
+                path += "M" + x + " 0 L" + x + " " + height + " "
+            }
+
+            for (let y = gridWidth; y < height; y += gridWidth) {
+                path += "M0 " + y + " L" + width + " " + y + " "
+            }
+
+            return path
+        }
+
+        const gridPath = getGridPath(this.versions[sysname].legendWidth, this.width, this.height)
+
+        const mapSVG = d3.select("#" + mapSVGID)
+                      .append("path")
+                      .attr("d", gridPath)
+                      .attr("fill", "none")
+                      .attr("stroke", "#5A5A5A")  // blue: #3474eb
+                      .attr("stroke-width", "2px")
+                      .attr("stroke-opacity", 0.4)
     }
 
     /**
@@ -1249,9 +1288,11 @@ class CartMap {
             map_container.removeChild(map_container.firstChild);
         }
 
-        var canvas = d3.select('#' + element_id).append("svg")
-            .attr("width", this.width)
-            .attr("height", this.height);
+        var canvas = d3.select('#' + element_id)
+                       .append("svg")
+                       .attr("width", this.width)
+                       .attr("height", this.height)
+                       .attr('id', element_id + "-svg");
         
         var polygons_to_draw = [];
 
@@ -1498,6 +1539,7 @@ class CartMap {
 
 
         this.drawLegend(new_sysname, element_id + "-legend");
+        this.drawGridLines(new_sysname, element_id + "-svg")
 
     }
 }
@@ -2718,9 +2760,12 @@ class Cartogram {
                                 this.updateGridDocument(response.grid_document);
                             }
 
-                            // The following line draws the conventional legend when the page first loads.
+                            // The following line draws the legends when the page first loads.
                             this.model.map.drawLegend("1-conventional", "map-area-legend");
                             this.model.map.drawLegend(this.model.current_sysname, "cartogram-area-legend");
+
+                            this.model.map.drawGridLines("1-conventional", "map-area-svg")
+                            this.model.map.drawGridLines(this.model.current_sysname, "cartogram-area-svg");
 
                             this.exitLoadingState();
                             document.getElementById('cartogram').style.display = "block";
@@ -2956,7 +3001,8 @@ class Cartogram {
             this.model.map.drawLegend("1-conventional", "map-area-legend");
             this.model.map.drawLegend(this.model.current_sysname, "cartogram-area-legend");
             
-
+            this.model.map.drawGridLines("1-conventional", "map-area-svg");
+            this.model.map.drawGridLines(this.model.current_sysname, "cartogram-area-svg");
 
             document.getElementById('template-link').href = this.config.cartogram_data_dir+ "/" + sysname + "/template.csv";
             document.getElementById('cartogram').style.display = 'block';
