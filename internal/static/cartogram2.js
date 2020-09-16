@@ -911,37 +911,73 @@ class CartMap {
         // Remove existing child nodes
         legendSVG.selectAll('*').remove();
 
+        // Initialize selection
+        let selectedLegend = "A"
+
         // Create child nodes of SVG element.
-        const legendSquareA = legendSVG.append('rect')
-                                        //.attr('id', 'legend-square')
+        const legendSquareC = legendSVG.append('rect')
+                                        .attr('id', legendSVGID + "C")
                                         .attr('x', '20') // Padding of 20px on the left
                                         .attr('y', '5')
-                                        .attr('fill', 'none')
+                                        .attr('fill', '#EEEEEE')
+                                        .attr('stroke', '#AAAAAA')
+                                       // .attr("stroke-opacity", 0.4)
+                                        .attr("stroke-width", "2px")
+                                        .attr('width', '30')
+                                        .attr('height', '30')
+                                        .on("click", function() {
+                                            selectedLegend = "C"
+                                            d3.select("#" + legendSVGID + "C").attr('fill', '#FFFFFF')
+                                            d3.select("#" + legendSVGID + "B").attr('fill', '#FFFFFF')
+                                            d3.select("#" + legendSVGID + "A").attr('fill', '#FFFFFF')
+                                        })
+                                        .on("mouseover", function(d) {
+                                            if (selectedLegend != "C")
+                                                d3.select(this).attr("cursor", "pointer")
+                                        })
+
+        const legendSquareB = legendSVG.append('rect')
+                                        .attr('id', legendSVGID + "B")
+                                        .attr('x', '20') // Padding of 20px on the left
+                                        .attr('y', '5')
+                                        .attr('fill', '#EEEEEE')
+                                        .attr('stroke', '#AAAAAA')
+                                       // .attr("stroke-opacity", 0.4)
+                                        .attr("stroke-width", "2px")
+                                        .attr('width', '30')
+                                        .attr('height', '30')
+                                        .on("click", function(d) {
+                                            selectedLegend = "B";
+                                            d3.select("#" + legendSVGID + "C").attr('fill', '#FFFFFF');
+                                            d3.select("#" + legendSVGID + "B").attr('fill', '#FFFFFF');
+                                            d3.select("#" + legendSVGID + "A").attr('fill', '#FFFFFF');
+                                        })
+                                        .on("mouseover", function() {
+                                            if (selectedLegend != "B")
+                                                d3.select(this).attr("cursor", "pointer")
+                                        });
+
+        const legendSquareA = legendSVG.append('rect')
+                                        .attr('id', legendSVGID + "A")
+                                        .attr('x', '20') // Padding of 20px on the left
+                                        .attr('y', '5')
+                                        .attr('fill', '#FFFFFF')
                                         .attr('stroke', '#AAAAAA')
                                         //.attr("stroke-opacity", 0.4)
                                         .attr("stroke-width", "2px")
                                         .attr('width', '30')
                                         .attr('height', '30')
+                                        .on("click", function(d) {
+                                            selectedLegend = "A";
+                                            d3.select("#" + legendSVGID + "C").attr('fill', '#EEEEEE');
+                                            d3.select("#" + legendSVGID + "B").attr('fill', '#EEEEEE');
+                                            d3.select("#" + legendSVGID + "A").attr('fill', '#FFFFFF');
+                                        })
+                                        .on("mouseover", function() {
+                                            if (selectedLegend != "A")
+                                                d3.select(this).attr("cursor", "pointer")
+                                        });
 
-        const legendSquareB = legendSVG.append('rect')
-                                        .attr('x', '20') // Padding of 20px on the left
-                                        .attr('y', '5')
-                                        .attr('fill', 'none')
-                                        .attr('stroke', '#AAAAAA')
-                                       // .attr("stroke-opacity", 0.4)
-                                        .attr("stroke-width", "2px")
-                                        .attr('width', '30')
-                                        .attr('height', '30')
-
-        const legendSquareC = legendSVG.append('rect')
-                                        .attr('x', '20') // Padding of 20px on the left
-                                        .attr('y', '5')
-                                        .attr('fill', 'none')
-                                        .attr('stroke', '#AAAAAA')
-                                       // .attr("stroke-opacity", 0.4)
-                                        .attr("stroke-width", "2px")
-                                        .attr('width', '30')
-                                        .attr('height', '30')
 
         const legendText = legendSVG.append('text')
                                         .attr('id', 'legend-text')
