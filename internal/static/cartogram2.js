@@ -450,7 +450,7 @@ class MapVersion {
         this.extrema = extrema;
         this.labels = labels;
         this.world = world;
-        this.legendWidth = legendWidth
+        this.legendWidth = legendWidth;
     }
 }
 
@@ -919,22 +919,12 @@ class CartMap {
                                         .attr('id', legendSVGID + "C")
                                         .attr('x', '20') // Padding of 20px on the left
                                         .attr('y', '5')
-                                        .attr('fill', '#EEEEEE')
+                                        .attr('fill', '#eeeeee')
                                         .attr('stroke', '#AAAAAA')
                                        // .attr("stroke-opacity", 0.4)
                                         .attr("stroke-width", "2px")
                                         .attr('width', '30')
                                         .attr('height', '30')
-                                        .on("click", function() {
-                                            selectedLegend = "C"
-                                            d3.select("#" + legendSVGID + "C").attr('fill', '#FFFFFF')
-                                            d3.select("#" + legendSVGID + "B").attr('fill', '#FFFFFF')
-                                            d3.select("#" + legendSVGID + "A").attr('fill', '#FFFFFF')
-                                        })
-                                        .on("mouseover", function(d) {
-                                            if (selectedLegend != "C")
-                                                d3.select(this).attr("cursor", "pointer")
-                                        })
 
         const legendSquareB = legendSVG.append('rect')
                                         .attr('id', legendSVGID + "B")
@@ -948,9 +938,11 @@ class CartMap {
                                         .attr('height', '30')
                                         .on("click", function(d) {
                                             selectedLegend = "B";
-                                            d3.select("#" + legendSVGID + "C").attr('fill', '#FFFFFF');
+                                            d3.select("#" + legendSVGID + "C").attr('fill', '#EEEEEE');
                                             d3.select("#" + legendSVGID + "B").attr('fill', '#FFFFFF');
                                             d3.select("#" + legendSVGID + "A").attr('fill', '#FFFFFF');
+
+
                                         })
                                         .on("mouseover", function() {
                                             if (selectedLegend != "B")
@@ -984,10 +976,6 @@ class CartMap {
                                         .attr('fill', '#5A5A5A')
                                         .attr('dy', '0.3em');  // vertical alignment
 
-        const totalValue = legendSVG.append('text')
-                                        .attr('id', 'total-text')
-                                        .attr('x', '20')// Padding of 20px on the left
-                                        .attr('fill', '#5A5A5A');
 
         // Get unit for the map that we wish to draw legend for.
         const unit = this.getLegendUnit(sysname);
@@ -1006,9 +994,8 @@ class CartMap {
         // Declare and assign variables for valuePerSquare's power of 10 and "nice number".
         let scalePowerOf10 = Math.floor(Math.log10(valuePerSquare));
         let scaleNiceNumberA = 99;
-        let scaleNiceNumberB = 99;
-        let scaleNiceNumberC = 99;
-
+        let scaleNiceNumberB;
+        let scaleNiceNumberC;
 
         // We find the "nice number" that is closest to valuePerSquare's
         const valueFirstNumber = valuePerSquare / Math.pow(10, scalePowerOf10);
@@ -1049,27 +1036,74 @@ class CartMap {
         legendSquareC.attr("width", widthC.toString() +"px")
                     .attr("height", widthC.toString() +"px");
 
+        // Add legend square labels
+        legendSVG.append("text")
+            .attr("x", 20+widthA-10)
+            .attr("y", widthA)
+            .attr("font-size", 8)
+            .text(scaleNiceNumberA);
+
+        legendSVG.append("text")
+            .attr("x", 20+widthB-10)
+            .attr("y", widthB)
+            .attr("font-size", 8)
+            .text(scaleNiceNumberB);
+
+        legendSVG.append("text")
+            .attr("x", 20+widthC-13)
+            .attr("y", widthC)
+            .attr("font-size", 8)
+            .text(scaleNiceNumberC);
+
+        // Generate SVG path for different-sized grid lines
+        const numLines = 1 + Math.floor((this.width-20) / widthA) // this.versions[sysname].numGridLines;  Get number of grid lines
+        const gridA = this.getGridPath(sysname, widthA, this.width, this.height, numLines)
+        const gridB = this.getGridPath(sysname, widthB, this.width, this.height, numLines)
+        const gridC = this.getGridPath(sysname, widthC, this.width, this.height, numLines)
+
         // Set "x" and "y" of legend text relative to square's width
-        legendText.attr('x', (15+widthC+10).toString() + 'px')
+        legendText.attr('x', (20+widthC+15).toString() + 'px')
                   .attr('y', (5 + widthC*0.5).toString() + 'px');
 
         // Set legend text
+        // legendText.append("tspan")
+        //     .text("Each Square: ")
+
+        legendText.append("tspan")
+            .attr("id", legendSVGID + "-number")
+            .text('9999')
+
+        legendText.append("tspan")
+            .attr("id", legendSVGID + "-unit")
+            .text(" placeholder")
+
         const largeNumberNames = {6: " million", 9: " billion"}
 
         if (scalePowerOf10 > -4 && scalePowerOf10 < 12) {
-            if (scalePowerOf10 in largeNumberNames)
-                legendText.text("= " + scaleNiceNumberA + " " + largeNumberNames[scalePowerOf10] + " " + unit);
-            else if (scalePowerOf10 > 9)
-                legendText.text("= " + (scaleNiceNumberA * Math.pow(10, scalePowerOf10-9) + " billion " + unit));
-            else if (scalePowerOf10 > 6)
-                legendText.text("= " + (scaleNiceNumberA * Math.pow(10, scalePowerOf10-6) + " million " + unit));
-            else
-                legendText.text("= " + (scaleNiceNumberA * Math.pow(10, scalePowerOf10)).toLocaleString().split(',').join(' ') + " " + unit);
+            if (scalePowerOf10 in largeNumberNames) {
+                // legendText.text("= " + scaleNiceNumberA + " " + largeNumberNames[scalePowerOf10] + " " + unit);
+                d3.select("#" + legendSVGID + "-number").text(scaleNiceNumberA);
+                d3.select("#" + legendSVGID + "-unit").text(" " + largeNumberNames[scalePowerOf10] + " " + unit);
+            }
+            else if (scalePowerOf10 > 9) {
+                // legendText.text("= " + (scaleNiceNumberA * Math.pow(10, scalePowerOf10-9) + " billion " + unit));
+                d3.select("#" + legendSVGID + "-number").text(scaleNiceNumberA * Math.pow(10, scalePowerOf10-9));
+                d3.select("#" + legendSVGID + "-unit").text(" billion " + unit);
+            }
+            else if (scalePowerOf10 > 6) {
+                // legendText.text("= " + (scaleNiceNumberA * Math.pow(10, scalePowerOf10-6) + " million " + unit));
+                d3.select("#" + legendSVGID + "-number").text(scaleNiceNumberA * Math.pow(10, scalePowerOf10-6));
+                d3.select("#" + legendSVGID + "-unit").text(" million " + unit);
+            }
+            else {
+                d3.select("#" + legendSVGID + "-number").text((scaleNiceNumberA * Math.pow(10, scalePowerOf10)).toLocaleString().split(',').join(' '));
+                d3.select("#" + legendSVGID + "-unit").text(" " + unit);
+            }
         }
         // If scalePowerOf10 is too extreme, we use scientific notation
         else {
-            legendText.append('tspan')
-                .html("= " + scaleNiceNumberA + " &#xD7; 10")
+            d3.select("#" + legendSVGID + "-number").text(scaleNiceNumberA);
+            d3.select("#" + legendSVGID + "-unit").html(" &#xD7; 10");
             legendText.append('tspan')
                 .text(scalePowerOf10)
                 .style("font-size", "10px")
@@ -1081,8 +1115,74 @@ class CartMap {
         }
 
         // Set "y" of total value text to be 20px below the top of the square.
+        const totalValue = legendSVG.append('text')
+                                        .attr('id', 'total-text')
+                                        .attr('x', '20')// Padding of 20px on the left
+                                        .attr('fill', '#5A5A5A');
+
         const total_value_Y = 5 + parseInt(widthC) + 20;
         totalValue.attr("y", total_value_Y.toString() + "px");
+
+        // Event for when a different legend size is selected.
+        const legendNumber = d3.select("#" + legendSVGID + "-number").text();
+        console.log(legendNumber);
+        legendSquareC.on("click", function() {
+                            selectedLegend = "C"
+                            d3.select("#" + legendSVGID + "C").attr('fill', '#FFFFFF')
+                            d3.select("#" + legendSVGID + "B").attr('fill', '#FFFFFF')
+                            d3.select("#" + legendSVGID + "A").attr('fill', '#FFFFFF')
+
+                            d3.select("#" + legendSVGID.substring(0, legendSVGID.length-6) + "grid-path")
+                                .transition()
+                                .duration(1000)
+                                .attr('d', gridC)
+
+                            // d3.select("#" + legendSVGID + "-number").text(scaleNiceNumberC);
+                            d3.select("#" + legendSVGID + "-number")
+                              .text(parseInt(legendNumber.substring(0,1))/scaleNiceNumberA*scaleNiceNumberC + legendNumber.substring(1, legendNumber.length));
+
+                        })
+                        .on("mouseover", function(d) {
+                            if (selectedLegend != "C")
+                                d3.select(this).attr("cursor", "pointer")
+                        })
+
+        legendSquareB.on("click", function() {
+                            selectedLegend = "C"
+                            d3.select("#" + legendSVGID + "C").attr('fill', '#EEEEEE')
+                            d3.select("#" + legendSVGID + "B").attr('fill', '#FFFFFF')
+                            d3.select("#" + legendSVGID + "A").attr('fill', '#FFFFFF')
+
+                            d3.select("#" + legendSVGID.substring(0, legendSVGID.length-6) + "grid-path")
+                                .transition()
+                                .duration(1000)
+                                .attr('d', gridB)
+
+                            d3.select("#" + legendSVGID + "-number")
+                              .text(parseInt(legendNumber.substring(0,1))/scaleNiceNumberA*scaleNiceNumberB + legendNumber.substring(1, legendNumber.length));
+                        })
+                        .on("mouseover", function(d) {
+                            if (selectedLegend != "C")
+                                d3.select(this).attr("cursor", "pointer")
+                        })
+
+        legendSquareA.on("click", function() {
+                            selectedLegend = "C"
+                            d3.select("#" + legendSVGID + "C").attr('fill', '#EEEEEE')
+                            d3.select("#" + legendSVGID + "B").attr('fill', '#EEEEEE')
+                            d3.select("#" + legendSVGID + "A").attr('fill', '#FFFFFF')
+
+                            d3.select("#" + legendSVGID.substring(0, legendSVGID.length-6) + "grid-path")
+                                .transition()
+                                .duration(1000)
+                                .attr('d', gridA)
+
+                            d3.select("#" + legendSVGID + "-number").text(legendNumber);
+                        })
+                        .on("mouseover", function(d) {
+                            if (selectedLegend != "C")
+                                d3.select(this).attr("cursor", "pointer")
+                        })
 
         // Set total value text.
         const totalScalePowerOfTen = Math.floor(Math.log10(versionTotalValue));
@@ -1119,34 +1219,55 @@ class CartMap {
     }
 
     /**
+     * getGridPath generates an SVG path for grid lines
+     * @param {number} gridWidth
+     * @param {number} width
+     * @param {number} height
+     * @param {number} numLines
+     */
+    getGridPath(mapSVGID, gridWidth, width, height, numLines) {
+        let path = ""
+
+        for (let i = 0; i < numLines; i++) {
+            path += "M" + (20 + gridWidth*i) + " 0 L" + (20 + gridWidth*i) + " " + height + " "
+        }
+
+        for (let j = 1; j <= numLines; j++) {
+            path += "M0 " + (height - gridWidth*j) + " L" + width + " " + (height - gridWidth*j) + " "
+        }
+
+        return path;
+    }
+
+    /**
      * drawGridLines appends grid lines to the map
      * @param {string} sysname A unique system identifier for the version
      * @param {string} mapSVGID The map's SVG element's ID
      */
     drawGridLines(sysname, mapSVGID) {
 
-        const getGridPath = function(gridWidth, width, height) {
+        const getOriginalGridPath = function(gridWidth, width, height) {
             let path = ""
 
             for (let x = 20; x < width; x += gridWidth) {  // Starts at x=20 to align with legend square
                 path += "M" + x + " 0 L" + x + " " + height + " "
             }
 
-            for (let y = gridWidth; y < height; y += gridWidth) {
+            for (let y = height - gridWidth ; y > 0; y -= gridWidth) {
                 path += "M0 " + y + " L" + width + " " + y + " "
             }
 
             return path
         }
 
-        const gridPath = getGridPath(this.versions[sysname].legendWidth, this.width, this.height)
+        const gridPath = getOriginalGridPath(this.versions[sysname].legendWidth, this.width, this.height)
 
         const mapSVG = d3.select("#" + mapSVGID)
 
-        mapSVG.select("#grid-path").remove()  // Remove existing grid
+        mapSVG.select("#" + mapSVGID.substring(0, mapSVGID.length-3) + "grid-path").remove()  // Remove existing grid
 
         mapSVG.append("path")
-              .attr("id", "grid-path")
+              .attr("id", mapSVGID.substring(0, mapSVGID.length-3) + "grid-path")
               .attr("d", gridPath)
               .attr("fill", "none")
               .attr("stroke", "#5A5A5A")  // blue: #3474eb
