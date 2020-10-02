@@ -926,6 +926,7 @@ class CartMap {
                                         .attr('width', '30')
                                         .attr('height', '30')
 
+
         const legendSquareB = legendSVG.append('rect')
                                         .attr('id', legendSVGID + "B")
                                         .attr('x', '20') // Padding of 20px on the left
@@ -936,18 +937,7 @@ class CartMap {
                                         .attr("stroke-width", "2px")
                                         .attr('width', '30')
                                         .attr('height', '30')
-                                        .on("click", function(d) {
-                                            selectedLegend = "B";
-                                            d3.select("#" + legendSVGID + "C").attr('fill', '#EEEEEE');
-                                            d3.select("#" + legendSVGID + "B").attr('fill', '#FFFFFF');
-                                            d3.select("#" + legendSVGID + "A").attr('fill', '#FFFFFF');
 
-
-                                        })
-                                        .on("mouseover", function() {
-                                            if (selectedLegend != "B")
-                                                d3.select(this).attr("cursor", "pointer")
-                                        });
 
         const legendSquareA = legendSVG.append('rect')
                                         .attr('id', legendSVGID + "A")
@@ -959,17 +949,6 @@ class CartMap {
                                         .attr("stroke-width", "2px")
                                         .attr('width', '30')
                                         .attr('height', '30')
-                                        .on("click", function(d) {
-                                            selectedLegend = "A";
-                                            d3.select("#" + legendSVGID + "C").attr('fill', '#EEEEEE');
-                                            d3.select("#" + legendSVGID + "B").attr('fill', '#EEEEEE');
-                                            d3.select("#" + legendSVGID + "A").attr('fill', '#FFFFFF');
-                                        })
-                                        .on("mouseover", function() {
-                                            if (selectedLegend != "A")
-                                                d3.select(this).attr("cursor", "pointer")
-                                        });
-
 
         const legendText = legendSVG.append('text')
                                         .attr('id', 'legend-text')
@@ -1121,15 +1100,6 @@ class CartMap {
                 .attr("dx", "8px")
         }
 
-        // Set "y" of total value text to be 20px below the top of the square.
-        const totalValue = legendSVG.append('text')
-                                        .attr('id', 'total-text')
-                                        .attr('x', '20')// Padding of 20px on the left
-                                        .attr('fill', '#5A5A5A');
-
-        const total_value_Y = 5 + parseInt(widthC) + 20;
-        totalValue.attr("y", total_value_Y.toString() + "px");
-
         // Event for when a different legend size is selected.
         const legendNumber = d3.select("#" + legendSVGID + "-number").text();
         legendSquareC.on("click", function() {
@@ -1143,18 +1113,18 @@ class CartMap {
                                 .duration(1000)
                                 .attr('d', gridC)
 
-                            // d3.select("#" + legendSVGID + "-number").text(scaleNiceNumberC);
                             d3.select("#" + legendSVGID + "-number")
                               .text(parseInt(legendNumber.substring(0,1))/scaleNiceNumberA*scaleNiceNumberC + legendNumber.substring(1, legendNumber.length));
 
                         })
                         .on("mouseover", function(d) {
-                            if (selectedLegend != "C")
-                                d3.select(this).attr("cursor", "pointer")
+                            if (selectedLegend != "C") {
+                                d3.select(this).attr("cursor", "pointer");
+                            }
                         })
 
         legendSquareB.on("click", function() {
-                            selectedLegend = "C"
+                            selectedLegend = "B"
                             d3.select("#" + legendSVGID + "C").attr('fill', '#EEEEEE')
                             d3.select("#" + legendSVGID + "B").attr('fill', '#FFFFFF')
                             d3.select("#" + legendSVGID + "A").attr('fill', '#FFFFFF')
@@ -1168,12 +1138,13 @@ class CartMap {
                               .text(parseInt(legendNumber.substring(0,1))/scaleNiceNumberA*scaleNiceNumberB + legendNumber.substring(1, legendNumber.length));
                         })
                         .on("mouseover", function(d) {
-                            if (selectedLegend != "C")
+                            if (selectedLegend != "B") {
                                 d3.select(this).attr("cursor", "pointer")
+                            }
                         })
 
         legendSquareA.on("click", function() {
-                            selectedLegend = "C"
+                            selectedLegend = "A"
                             d3.select("#" + legendSVGID + "C").attr('fill', '#EEEEEE')
                             d3.select("#" + legendSVGID + "B").attr('fill', '#EEEEEE')
                             d3.select("#" + legendSVGID + "A").attr('fill', '#FFFFFF')
@@ -1186,9 +1157,19 @@ class CartMap {
                             d3.select("#" + legendSVGID + "-number").text(legendNumber);
                         })
                         .on("mouseover", function(d) {
-                            if (selectedLegend != "C")
+                            if (selectedLegend != "A") {
                                 d3.select(this).attr("cursor", "pointer")
+                            }
                         })
+
+        // Set "y" of total value text to be 20px below the top of the square.
+        const totalValue = legendSVG.append('text')
+                                        .attr('id', 'total-text')
+                                        .attr('x', '20')// Padding of 20px on the left
+                                        .attr('fill', '#5A5A5A');
+
+        const total_value_Y = 5 + parseInt(widthC) + 20;
+        totalValue.attr("y", total_value_Y.toString() + "px");
 
         // Set total value text.
         const totalScalePowerOfTen = Math.floor(Math.log10(versionTotalValue));

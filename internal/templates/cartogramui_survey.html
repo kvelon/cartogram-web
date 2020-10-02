@@ -1,0 +1,288 @@
+<style>
+
+    @media screen and (max-width: 1000px) {
+        #cartogram-row {
+            display: block;
+        }
+
+        #cartogram-row .col-md-6 {
+            max-width: 100% !important;
+
+        }
+    }
+
+    .share-link {
+      margin-left: 10px;
+      margin-right: 10px;
+    }
+
+    .bar{
+        fill: steelblue;
+    }
+    .bar:hover{
+        fill: brown;
+    }
+    .axis {
+    font: 11px sans-serif;
+    }
+    .axis path,
+    .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+    }
+    #barchart svg {
+        overflow: visible !important;
+    }
+    #barchart text.label {
+        font-size: .8rem;
+        letter-spacing: -0.01rem;
+    }
+    #tooltip {
+      display: none;
+      background: rgba(255,255,255,0.7);
+      border: 1px solid black;
+      width: auto;
+      height: auto;
+      min-height: 75px;
+      padding: 5px;
+      position: absolute;
+      font-size: small;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+    }
+
+
+    @media screen and (min-width:1600px) {
+        .main-content {
+            padding-left: 250px;
+            padding-right: 250px;
+        }
+    }
+
+    path.slice {
+        stroke-width: 2px;
+    }
+
+    polyline {
+        opacity: .3;
+        stroke: black;
+        stroke-width: 2px;
+        fill: none;
+    }
+
+    #piechart-area svg {
+        width: 960px;
+        height: 450px;
+    }
+
+</style>
+
+
+<p id="tooltip">&nbsp;</p>
+
+<div class="container-fluid mt-5 main-content">
+
+       <div class="row">
+         <div class="col-md-6">
+           <div class="row" style="padding-left: 20px;">
+               <p class="lead" style="font-size: 35px;">
+                   <span>Question </span><span id="question-number">5</span><span>:</span>
+               </p>
+           </div>
+         </div>
+
+         <div class="col-md-6">
+           <div class="row">
+             <div class="col-5">
+                <select class="form-control border-primary bg-primary text-light" id="handler">
+                    {% for handler in cartogram_handlers %}
+                    <option value="{{handler.id}}" {% if handler.id == default_cartogram_handler %}selected{% endif %} >{{handler.display_name}}</option>
+                    {% endfor %}
+                  </select>
+             </div>
+             <div class="col-4">
+                <input type="button" class="btn btn-primary mb-2 d-block w-100" value="Upload Data" onclick="clearFileInput(document.getElementById('csv'));document.getElementById('csv').click();" id="upload-button"/>
+                <input type="button" class="btn btn-primary mb-2 d-block w-100" value="Edit" id="edit-button"  onclick="window.cartogram.launchGridEdit();" disabled/>
+             </div>
+           </div>
+           <p id="non-fatal-error" class="text-danger font-weight-bold"></p>
+         </div>
+       </div>
+
+
+       <input type="file" name="csv" id="csv" class="form-control-file" accept="text/csv,.csv" style="display: none" onchange="if(this.value != null) { window.cartogram.requestAndDrawCartogram(); }"/>
+
+       <p class="lead">Output:</p>
+
+       <div id="loading">
+          <p style="font-weight: bold">Loading...</p>
+
+          <div class="row" id="loading-progress-container" style="display: none">
+            <div class="col-sm-12 col-md-6">
+              <div class="progress">
+                <div class="progress-bar" role="progressbar" id="loading-progress"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="barchart-container" style="display: none">
+            <p>Your cartogram was unable to be generated due to an error. You may make use of this barchart instead, or refresh the page and try again.</p>
+
+            <div id="barchart" style="height: 600px"></div>
+        </div>
+
+
+        <div id="error" style="display: none">
+            <p style="font-weight: bold">Error: <span style="font-weight: normal" id="error-message"></span></p>
+            <p>To continue, please refresh this page.</p>
+
+            <div id="error-extended" style="display: none">
+              <p><b>Additional Information: </b> When reporting this error, please include the information below.</p>
+
+              <pre id="error-extended-content"></pre>
+            </div>
+      </div>
+
+      <div id="piechart" style="display: none">
+          <div class="row">
+              <div class="col-md-6">
+                  <h4>Confirm your data are appropriate for a cartogram</h4>
+                  <p> Your data sums to an approximate total of <b id="data-total"></b>. Is this a <a href="/faq#what-kind-of-data">meaningful quantity</a>?
+                      Additionally, you may consider the pie chart below. If it is an acceptable visualization for your dataset,
+                      then you can present your data as a cartogram. Otherwise, please choose a different dataset to continue.
+                  </p>
+              </div>
+          </div>
+          <div id="piechart-area"></div>
+          <div class="row" id="piechart-buttons">
+                  <button class="btn btn-primary mr-5" id="piechart-yes">Yes, I Confirm</button>
+                  <button class="btn btn-primary" id="piechart-no">Cancel</button>
+          </div>
+      </div>
+
+      <div id="cartogram">
+        <div class="row" id="cartogram-row">
+
+          <div class="col-md-6" >
+
+              <div style="height: 40px">
+                  <h4 class="mb-0">Equal-Area Map</h4>
+                  <!--<p id="tooltip">&nbsp;</p>-->
+                </div>
+
+
+               <div id = "map-area" style="margin-top: 20px"></div>
+
+{#              <div class="col-12">#}
+                <svg width="500" height="120" id="map-area-legend"></svg>
+{#              </div>#}
+
+          </div>
+
+          <div class="col-md-6" id="cartogram-container">
+
+              <div style="height: 40px">
+                  <div class="d-flex align-items-center">
+                      <h4 class="d-inline-block mb-0">Cartogram</h4>
+                      <div id="map2-switch" class="ml-2">
+                          <div  id="map2-switch-buttons"></div>
+                        </div>
+
+                  </div>
+
+                </div>
+
+                <div id = "cartogram-area" style="margin-top: 20px"></div>
+
+{#                <div class="col-12">#}
+                  <svg width="500" height="120" id="cartogram-area-legend"></svg>
+{#                </div>#}
+          </div>
+
+
+      </div>
+
+      <span id="map1-switch"></span>
+
+      </div>
+</div>
+
+<div class="modal fade" id="download-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header" style="border-bottom: none">
+            <img src="{{ url_for('static', filename='gocart_final.svg') }}" width="150" alt="" />
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p class="lead mb-5 text-center">Your map is ready!</p>
+          <p class="text-center mb-5">
+              <a href="" download="" id="download-modal-svg-link" class="btn btn-lg btn-primary" style="border-radius: 1.2em">Download SVG</a>
+              <a href="" download="" id="download-modal-geojson-link" class="btn btn-lg btn-primary ml-5" style="border-radius: 1.2em">Download GeoJSON</a>
+          </p>
+          <p class="lead text-center">Liked our work? Make sure to credit us using the citation below:</p>
+          <p class="text-primary">Gastner MT, Seguy V, More P. Fast flow-based algorithm for creating
+              density-equalizing map projections. Proc Natl Acad Sci USA 115(10):E2156–E2164 (2018).</p>
+        </div>
+        <!--<div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>-->
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="share-modal" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header" style="border-bottom: none">
+              <img src="{{ url_for('static', filename='gocart_final.svg') }}" width="150" alt="" />
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p class="lead mb-5 text-center">Share Now!</p>
+            <div class="d-flex mb-5 justify-content-center">
+
+              <div class="share-link">
+                  <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fgo-cart.io"
+                  onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=300,width=600');return false;"
+            target="_blank" title="Share on Facebook" class="social-link" id="facebook-share"><i class="fab fa-facebook-square"></i></a>
+              </div>
+
+              <div class="share-link">
+                  <a href="https://www.linkedin.com/shareArticle?url=https%3A%2F%2Fgo-cart.io&mini=true&title=Cartogram&summary=Create%20cartograms%20with%20go-cart.io&source=go-cart.io"
+              onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=520,width=570');return false;"
+              target="_blank" title="Share on LinkedIn" class="social-link" id="linkedin-share"><i class="fab fa-linkedin"></i></a>
+              </div>
+
+              <div class="share-link">
+                  <a href="https://twitter.com/share?url=https%3A%2F%2Fgo-cart.io"
+              onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=300,width=600');return false;"
+        target="_blank" title="Share on Twitter" class="social-link" id="twitter-share"><i class="fab fa-twitter-square"></i></a>
+              </div>
+
+              <div class="share-link">
+                  <a href="mailto:?body=https%3A%2F%2Fgo-cart.io"  title="Share by Email" class="social-link" id="email-share"><i class="fas fa-envelope-square"></i></a>
+              </div>
+
+            </div>
+            <p class="lead text-center">Liked our work? Make sure to credit us using the citation below:</p>
+            <p class="text-primary">Gastner MT, Seguy V, More P. Fast flow-based algorithm for creating
+                density-equalizing map projections. Proc Natl Acad Sci USA 115(10):E2156–E2164 (2018).</p>
+          </div>
+          <!--<div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Save changes</button>
+          </div>-->
+        </div>
+      </div>
+    </div>
+
+

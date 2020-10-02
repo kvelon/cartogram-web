@@ -227,6 +227,23 @@ if settings.USE_DATABASE:
 def get_random_string(length):
     return ''.join(random.SystemRandom().choice(string.ascii_lowercase + string.digits) for _ in range(length))
 
+@app.route('/survey', methods=['GET'])
+def survey():
+    cartogram_handlers_select = []
+
+    for key, handler in cartogram_handlers.items():
+        for selector_name in handler.selector_names():
+            cartogram_handlers_select.append({'id': key, 'display_name': selector_name})
+
+    cartogram_handlers_select.sort(key=lambda h: h['display_name'])
+
+    return render_template('survey.html', page_active='survey', cartogram_url=url_for('cartogram'),
+                           cartogramui_url=url_for('cartogram_ui'), getprogress_url=url_for('getprogress'),
+                           cartogram_data_dir=url_for('static', filename='cartdata'),
+                           cartogram_handlers=cartogram_handlers_select,
+                           default_cartogram_handler=default_cartogram_handler, cartogram_version=settings.VERSION,
+                           tracking=tracking.determine_tracking_action(request))
+
 
 @app.route('/consent', methods=['POST'])
 def consent():
@@ -609,6 +626,7 @@ def cartogram():
             db.session.commit()
 
     return Response(json.dumps({'cartogram_data': cartogram_json}), content_type='application/json', status=200)
+
 
 
 if __name__ == '__main__':
