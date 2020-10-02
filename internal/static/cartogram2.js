@@ -1010,17 +1010,19 @@ class CartMap {
         });
 
         if (scaleNiceNumberA == 1) {
-            scaleNiceNumberB = 2
-            scaleNiceNumberC = 5
+            scaleNiceNumberB = 2;
+            scaleNiceNumberC = 5;
         } else if (scaleNiceNumberA == 2) {
-            scaleNiceNumberB = 5
-            scaleNiceNumberC = 10
+            scaleNiceNumberB = 5;
+            scaleNiceNumberC = 10;
         } else if (scaleNiceNumberA == 5) {
-            scaleNiceNumberB = 10
-            scaleNiceNumberC = 20
+            scaleNiceNumberB = 10;
+            scaleNiceNumberC = 20;
         } else {
-            scaleNiceNumberB = 20
-            scaleNiceNumberC = 50
+            scaleNiceNumberA = 1;
+            scaleNiceNumberB = 2;
+            scaleNiceNumberC = 5;
+            scalePowerOf10 += 1;
         }
 
         // Adjust width of square according to chosen nice number.
@@ -1056,18 +1058,20 @@ class CartMap {
             .text(scaleNiceNumberC);
 
         // Generate SVG path for different-sized grid lines
-        const numLines = 1 + Math.floor((this.width-20) / widthA) // this.versions[sysname].numGridLines;  Get number of grid lines
-        const gridA = this.getGridPath(sysname, widthA, this.width, this.height, numLines)
-        const gridB = this.getGridPath(sysname, widthB, this.width, this.height, numLines)
-        const gridC = this.getGridPath(sysname, widthC, this.width, this.height, numLines)
+        const gridA = this.getGridPath(widthA, this.width, this.height, widthA);
+        const gridB = this.getGridPath(widthB, this.width, this.height, widthA);
+        const gridC = this.getGridPath(widthC, this.width, this.height, widthA);
 
         // Set "x" and "y" of legend text relative to square's width
         legendText.attr('x', (20+widthC+15).toString() + 'px')
                   .attr('y', (5 + widthC*0.5).toString() + 'px');
 
         // Set legend text
-        // legendText.append("tspan")
-        //     .text("Each Square: ")
+        legendText.append("tspan").html(" &#xD7; ")
+
+        legendText.append("tspan").attr("id", legendSVGID + "-multiplier").text("10000")
+
+        legendText.append("tspan").text(" = ")
 
         legendText.append("tspan")
             .attr("id", legendSVGID + "-number")
@@ -1099,6 +1103,9 @@ class CartMap {
                 d3.select("#" + legendSVGID + "-number").text((scaleNiceNumberA * Math.pow(10, scalePowerOf10)).toLocaleString().split(',').join(' '));
                 d3.select("#" + legendSVGID + "-unit").text(" " + unit);
             }
+
+            // Adjust multiplier
+            d3.select("#" + legendSVGID + "-multiplier").text((Math.pow(10, scalePowerOf10)).toLocaleString().split(',').join(' '));
         }
         // If scalePowerOf10 is too extreme, we use scientific notation
         else {
@@ -1125,7 +1132,6 @@ class CartMap {
 
         // Event for when a different legend size is selected.
         const legendNumber = d3.select("#" + legendSVGID + "-number").text();
-        console.log(legendNumber);
         legendSquareC.on("click", function() {
                             selectedLegend = "C"
                             d3.select("#" + legendSVGID + "C").attr('fill', '#FFFFFF')
@@ -1223,20 +1229,25 @@ class CartMap {
      * @param {number} gridWidth
      * @param {number} width
      * @param {number} height
-     * @param {number} numLines
+     * @param {number} smallestWidth
      */
-    getGridPath(mapSVGID, gridWidth, width, height, numLines) {
-        let path = ""
+    getGridPath(gridWidth, width, height, smallestWidth) {
+        let gridPath = ""
 
-        for (let i = 0; i < numLines; i++) {
-            path += "M" + (20 + gridWidth*i) + " 0 L" + (20 + gridWidth*i) + " " + height + " "
+        const numVertLines = 1 + Math.floor((this.width-20) / smallestWidth);
+        const numHoriLines = 1 + Math.floor((this.height) / smallestWidth);
+
+        // Vertical lines
+        for (let i = 0; i < numVertLines; i++) {
+            gridPath += "M" + (20 + gridWidth*i) + " 0 L" + (20 + gridWidth*i) + " " + height + " ";
         }
 
-        for (let j = 1; j <= numLines; j++) {
-            path += "M0 " + (height - gridWidth*j) + " L" + width + " " + (height - gridWidth*j) + " "
+        // Horizontal Lines
+        for (let j = 1; j <= numHoriLines; j++) {
+            gridPath += "M0 " + (height - gridWidth*j) + " L" + width + " " + (height - gridWidth*j) + " ";
         }
 
-        return path;
+        return gridPath;
     }
 
     /**
@@ -1246,21 +1257,7 @@ class CartMap {
      */
     drawGridLines(sysname, mapSVGID) {
 
-        const getOriginalGridPath = function(gridWidth, width, height) {
-            let path = ""
-
-            for (let x = 20; x < width; x += gridWidth) {  // Starts at x=20 to align with legend square
-                path += "M" + x + " 0 L" + x + " " + height + " "
-            }
-
-            for (let y = height - gridWidth ; y > 0; y -= gridWidth) {
-                path += "M0 " + y + " L" + width + " " + y + " "
-            }
-
-            return path
-        }
-
-        const gridPath = getOriginalGridPath(this.versions[sysname].legendWidth, this.width, this.height)
+        const gridPath = this.getGridPath(this.versions[sysname].legendWidth, this.width, this.height, this.versions[sysname].legendWidth);
 
         const mapSVG = d3.select("#" + mapSVGID)
 
