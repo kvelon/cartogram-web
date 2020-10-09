@@ -288,7 +288,7 @@ class Tooltip {
 
         document.getElementById('tooltip').innerHTML = content;
 
-        document.getElementById('tooltip').style.display = 'inline-block';
+        document.getElementById('tooltip').style.display = 'None';  //inline-block
 
         document.getElementById('tooltip').style.left = (event.pageX - 50) + 'px';
 
@@ -1753,7 +1753,11 @@ class Cartogram {
             cartogram_data_dir: c_d,
             gridedit_url: g_u,
             getprogress_url: gp_u,
-            version: version
+            version: version,
+            enableLegend: true,
+            enableGridlines: true,
+            enableSelectable: true,
+            hideMapsByID: []
         };
 
         /**
@@ -1901,8 +1905,8 @@ class Cartogram {
 
         if(this.model.grid_document !== null)
         {
-            if(!this.model.in_loading_state)
-                document.getElementById('edit-button').disabled = false;
+            // if(!this.model.in_loading_state)
+            //     document.getElementById('edit-button').disabled = false;
 
             /*
             If the gridedit window is open, push the new grid document to it
@@ -2422,8 +2426,8 @@ class Cartogram {
         document.getElementById('piechart').style.display = 'none';
 
         /* Disable interaction with the upload form */
-        document.getElementById('upload-button').disabled = true;
-        document.getElementById('edit-button').disabled = true;
+        // document.getElementById('upload-button').disabled = true;
+        // document.getElementById('edit-button').disabled = true;
         document.getElementById('handler').disabled = true;
 
         /* If GridEdit is open, disable updating */
@@ -2473,8 +2477,8 @@ class Cartogram {
     exitLoadingState() {
 
         document.getElementById('loading').style.display = 'none';
-        document.getElementById('upload-button').disabled = false;
-        document.getElementById('edit-button').disabled = this.editButtonDisabled();
+        // document.getElementById('upload-button').disabled = false;
+        // document.getElementById('edit-button').disabled = this.editButtonDisabled();
         document.getElementById('handler').disabled = false;
 
         /* If GridEdit is open, enable updating */
@@ -2762,7 +2766,7 @@ class Cartogram {
         select.onchange = (function(cartogram_inst){
 
             return function(_e) {
-                cartogram_inst.switchVersion(this.value);
+                // cartogram_inst.switchVersion(this.value);
             };
 
         }(this));
@@ -2807,188 +2811,188 @@ class Cartogram {
      * CartogramUI
      * @returns {boolean}
      */
-    requestAndDrawCartogram(gd=null,sysname=null,update_grid_document=true) {
-
-        if(this.model.in_loading_state)
-            return false;
-
-        this.clearNonFatalError();
-
-        /* Do some validation */
-
-        if(gd === null)
-        {
-            if(document.getElementById('csv').files.length < 1)
-            {
-                this.doNonFatalError(Error('You must upload CSV data.'));
-                return false;
-            }
-        }
-
-        this.enterLoadingState();
-        this.showProgressBar();
-
-        if(sysname === null)
-        {
-            sysname = document.getElementById('handler').value;
-        }
-
-        var cartogramui_promise;
-
-        /*
-        If we're submitting a grid document, convert it and pretend to upload a CSV file. Otherwise, actually upload the
-        CSV file the user specified.
-        */
-        if(gd === null)
-        {
-            var form_data = new FormData();
-
-            form_data.append("handler", sysname);
-            form_data.append("csv", document.getElementById('csv').files[0]);
-
-            cartogramui_promise = HTTP.post(this.config.cartogramui_url, form_data);
-        }
-        else
-        {
-            var cartogramui_req_body = this.generateCartogramUIRequestBodyFromGridDocument(sysname, gd);
-
-            cartogramui_promise = HTTP.post(this.config.cartogramui_url, cartogramui_req_body.req_body, {
-                'Content-Type': 'multipart/form-data; boundary=' + cartogramui_req_body.mime_boundary
-            });
-        }
-
-        cartogramui_promise.then(function(response){
-
-            if(response.error == "none") {
-
-                /*
-                The keys in the CartogramUI color_data are prefixed with id_. We iterate through the regions and extract
-                the color information from color_data to produce a color map where the IDs are plain region IDs, as
-                required by CartMap.
-                */
-                var colors = {};
-
-                Object.keys(this.model.map.regions).forEach(function(region_id){
-
-                    colors[region_id] = response.color_data["id_" + region_id];
-
-                }, this);
-
-                this.model.map.colors = colors;
-
-                const pieChartButtonsContainer = document.getElementById('piechart-buttons');
-
-                while(pieChartButtonsContainer.firstChild) {
-                    pieChartButtonsContainer.removeChild(pieChartButtonsContainer.firstChild);
-                }
-
-                const noButton = document.createElement("button");
-                noButton.className = "btn btn-primary";
-                noButton.innerText = "Cancel";
-                noButton.addEventListener('click', function(e){
-                    document.getElementById('piechart').style.display = 'none';
-                    document.getElementById('cartogram').style.display = 'block';
-                });
-
-                const yesButton = document.createElement("button");
-                yesButton.className = "btn btn-primary mr-5";
-                yesButton.innerText = "Yes, I Confirm";
-                yesButton.addEventListener('click', function(sysname, response){
-
-                    return function(e) {
-
-                        this.enterLoadingState();
-                        this.showProgressBar();
-
-                       window.scrollTo(0, 0);
-
-                        this.getGeneratedCartogram(sysname, response.areas_string, response.unique_sharing_key).then(function(cartogram){
-
-                            /* We need to find out the map format. If the extrema is located in the bbox property, then we have
-                               GeoJSON. Otherwise, we have the old JSON format.
-                            */
-                            if(cartogram.hasOwnProperty("bbox")) {
-
-                                var extrema = {
-                                    min_x: cartogram.bbox[0],
-                                    min_y: cartogram.bbox[1],
-                                    max_x: cartogram.bbox[2],
-                                    max_y: cartogram.bbox[3]
-                                };
-
-                            // We check if the generated cartogram is a world map by checking the extent key
-                            let world = false;
-                            if ("extent" in cartogram) {
-                                world = (cartogram.extent === 'world');
-                            }
-
-                                this.model.map.addVersion("3-cartogram", new MapVersionData(cartogram.features, extrema, response.tooltip, null, null, MapDataFormat.GEOJSON, world));
-
-
-                            } else {
-                                this.model.map.addVersion("3-cartogram", new MapVersionData(cartogram.features, cartogram.extrema, response.tooltip,null, null,  MapDataFormat.GOCARTJSON));
-                            }
-
-
-
-                            this.model.map.drawVersion("1-conventional", "map-area", ["map-area", "cartogram-area"]);
-                            this.model.map.drawVersion("3-cartogram", "cartogram-area", ["map-area", "cartogram-area"]);
-
-
-
-                            this.model.current_sysname = "3-cartogram";
-
-                            this.generateSocialMediaLinks("https://go-cart.io/cart/" + response.unique_sharing_key);
-                            this.generateSVGDownloadLinks();
-                            this.displayVersionSwitchButtons();
-
-                            if(update_grid_document) {
-                                this.updateGridDocument(response.grid_document);
-                            }
-
-                            // The following line draws the legends when the page first loads.
-                            this.model.map.drawLegend("1-conventional", "map-area-legend");
-                            this.model.map.drawLegend(this.model.current_sysname, "cartogram-area-legend");
-
-                            this.model.map.drawGridLines("1-conventional", "map-area-svg")
-                            this.model.map.drawGridLines(this.model.current_sysname, "cartogram-area-svg");
-
-                            this.exitLoadingState();
-                            document.getElementById('cartogram').style.display = "block";
-
-                        }.bind(this), function(err){
-                            this.doFatalError(err);
-                            console.log(err);
-
-                            this.drawBarChartFromTooltip('barchart', response.tooltip);
-                            document.getElementById('barchart-container').style.display = "block";
-                        }.bind(this))
-
-
-                    }.bind(this);
-
-                }.bind(this)(sysname, response));
-
-                pieChartButtonsContainer.appendChild(yesButton);
-                pieChartButtonsContainer.appendChild(noButton);
-
-                this.drawPieChartFromTooltip('piechart-area', response.tooltip, colors);
-                this.exitLoadingState();
-                document.getElementById('piechart').style.display = 'block';
-
-            } else {
-
-                this.exitLoadingState();
-                document.getElementById('cartogram').style.display = "block";
-                this.doNonFatalError(Error(response.error));
-
-            }
-
-        }.bind(this), this.doFatalError);
-
-        return false;
-
-    }
+    // requestAndDrawCartogram(gd=null,sysname=null,update_grid_document=true) {
+    //
+    //     if(this.model.in_loading_state)
+    //         return false;
+    //
+    //     this.clearNonFatalError();
+    //
+    //     /* Do some validation */
+    //
+    //     if(gd === null)
+    //     {
+    //         if(document.getElementById('csv').files.length < 1)
+    //         {
+    //             this.doNonFatalError(Error('You must upload CSV data.'));
+    //             return false;
+    //         }
+    //     }
+    //
+    //     this.enterLoadingState();
+    //     this.showProgressBar();
+    //
+    //     if(sysname === null)
+    //     {
+    //         sysname = document.getElementById('handler').value;
+    //     }
+    //
+    //     var cartogramui_promise;
+    //
+    //     /*
+    //     If we're submitting a grid document, convert it and pretend to upload a CSV file. Otherwise, actually upload the
+    //     CSV file the user specified.
+    //     */
+    //     if(gd === null)
+    //     {
+    //         var form_data = new FormData();
+    //
+    //         form_data.append("handler", sysname);
+    //         form_data.append("csv", document.getElementById('csv').files[0]);
+    //
+    //         cartogramui_promise = HTTP.post(this.config.cartogramui_url, form_data);
+    //     }
+    //     else
+    //     {
+    //         var cartogramui_req_body = this.generateCartogramUIRequestBodyFromGridDocument(sysname, gd);
+    //
+    //         cartogramui_promise = HTTP.post(this.config.cartogramui_url, cartogramui_req_body.req_body, {
+    //             'Content-Type': 'multipart/form-data; boundary=' + cartogramui_req_body.mime_boundary
+    //         });
+    //     }
+    //
+    //     cartogramui_promise.then(function(response){
+    //
+    //         if(response.error == "none") {
+    //
+    //             /*
+    //             The keys in the CartogramUI color_data are prefixed with id_. We iterate through the regions and extract
+    //             the color information from color_data to produce a color map where the IDs are plain region IDs, as
+    //             required by CartMap.
+    //             */
+    //             var colors = {};
+    //
+    //             Object.keys(this.model.map.regions).forEach(function(region_id){
+    //
+    //                 colors[region_id] = response.color_data["id_" + region_id];
+    //
+    //             }, this);
+    //
+    //             this.model.map.colors = colors;
+    //
+    //             const pieChartButtonsContainer = document.getElementById('piechart-buttons');
+    //
+    //             while(pieChartButtonsContainer.firstChild) {
+    //                 pieChartButtonsContainer.removeChild(pieChartButtonsContainer.firstChild);
+    //             }
+    //
+    //             const noButton = document.createElement("button");
+    //             noButton.className = "btn btn-primary";
+    //             noButton.innerText = "Cancel";
+    //             noButton.addEventListener('click', function(e){
+    //                 document.getElementById('piechart').style.display = 'none';
+    //                 document.getElementById('cartogram').style.display = 'block';
+    //             });
+    //
+    //             const yesButton = document.createElement("button");
+    //             yesButton.className = "btn btn-primary mr-5";
+    //             yesButton.innerText = "Yes, I Confirm";
+    //             yesButton.addEventListener('click', function(sysname, response){
+    //
+    //                 return function(e) {
+    //
+    //                     this.enterLoadingState();
+    //                     this.showProgressBar();
+    //
+    //                    window.scrollTo(0, 0);
+    //
+    //                     this.getGeneratedCartogram(sysname, response.areas_string, response.unique_sharing_key).then(function(cartogram){
+    //
+    //                         /* We need to find out the map format. If the extrema is located in the bbox property, then we have
+    //                            GeoJSON. Otherwise, we have the old JSON format.
+    //                         */
+    //                         if(cartogram.hasOwnProperty("bbox")) {
+    //
+    //                             var extrema = {
+    //                                 min_x: cartogram.bbox[0],
+    //                                 min_y: cartogram.bbox[1],
+    //                                 max_x: cartogram.bbox[2],
+    //                                 max_y: cartogram.bbox[3]
+    //                             };
+    //
+    //                         // We check if the generated cartogram is a world map by checking the extent key
+    //                         let world = false;
+    //                         if ("extent" in cartogram) {
+    //                             world = (cartogram.extent === 'world');
+    //                         }
+    //
+    //                             this.model.map.addVersion("3-cartogram", new MapVersionData(cartogram.features, extrema, response.tooltip, null, null, MapDataFormat.GEOJSON, world));
+    //
+    //
+    //                         } else {
+    //                             this.model.map.addVersion("3-cartogram", new MapVersionData(cartogram.features, cartogram.extrema, response.tooltip,null, null,  MapDataFormat.GOCARTJSON));
+    //                         }
+    //
+    //
+    //
+    //                         this.model.map.drawVersion("1-conventional", "map-area", ["map-area", "cartogram-area"]);
+    //                         this.model.map.drawVersion("3-cartogram", "cartogram-area", ["map-area", "cartogram-area"]);
+    //
+    //
+    //
+    //                         this.model.current_sysname = "3-cartogram";
+    //
+    //                         this.generateSocialMediaLinks("https://go-cart.io/cart/" + response.unique_sharing_key);
+    //                         this.generateSVGDownloadLinks();
+    //                         this.displayVersionSwitchButtons();
+    //
+    //                         if(update_grid_document) {
+    //                             this.updateGridDocument(response.grid_document);
+    //                         }
+    //
+    //                         // The following line draws the legends when the page first loads.
+    //                         this.model.map.drawLegend("1-conventional", "map-area-legend");
+    //                         this.model.map.drawLegend(this.model.current_sysname, "cartogram-area-legend");
+    //
+    //                         this.model.map.drawGridLines("1-conventional", "map-area-svg")
+    //                         this.model.map.drawGridLines(this.model.current_sysname, "cartogram-area-svg");
+    //
+    //                         this.exitLoadingState();
+    //                         document.getElementById('cartogram').style.display = "block";
+    //
+    //                     }.bind(this), function(err){
+    //                         this.doFatalError(err);
+    //                         console.log(err);
+    //
+    //                         this.drawBarChartFromTooltip('barchart', response.tooltip);
+    //                         document.getElementById('barchart-container').style.display = "block";
+    //                     }.bind(this))
+    //
+    //
+    //                 }.bind(this);
+    //
+    //             }.bind(this)(sysname, response));
+    //
+    //             pieChartButtonsContainer.appendChild(yesButton);
+    //             pieChartButtonsContainer.appendChild(noButton);
+    //
+    //             this.drawPieChartFromTooltip('piechart-area', response.tooltip, colors);
+    //             this.exitLoadingState();
+    //             document.getElementById('piechart').style.display = 'block';
+    //
+    //         } else {
+    //
+    //             this.exitLoadingState();
+    //             document.getElementById('cartogram').style.display = "block";
+    //             this.doNonFatalError(Error(response.error));
+    //
+    //         }
+    //
+    //     }.bind(this), this.doFatalError);
+    //
+    //     return false;
+    //
+    // }
 
     /**
      * getPregeneratedVersion returns an HTTP get request for a pregenerated map version.
@@ -3091,26 +3095,6 @@ class Cartogram {
                 world = (mappack.original.extent === "world");
             }
 
-            /* If it is a world map, we add a class name to the html elements,
-               and we use this class name in implementing the CSS which draws a border
-             */
-
-            // if (world) {
-            //     let conventional_map = document.getElementById("map-area");
-            //     let cartogram_map = document.getElementById("cartogram-area");
-            //
-            //     if (!conventional_map.classList.contains('world-border')) {
-            //         conventional_map.className += "world-border";
-            //         cartogram_map.className += "world-border";
-            //     }
-            //
-            // } else {
-            //     let conventional_map = document.getElementById("map-area");
-            //     let cartogram_map = document.getElementById("cartogram-area");
-            //     conventional_map.classList.remove("world-border");
-            //     cartogram_map.classList.remove("world-border");
-            // }
-
             /* We need to find out the map format. If the extrema is located in the bbox property, then we have
                GeoJSON. Otherwise, we have the old JSON format.
             */
@@ -3196,47 +3180,4 @@ class Cartogram {
 
     }
 
-}
-
-/**
- * WorldMapProjection is an abstract class which contains methods for transforming
- * longitude and latitude to a different projection.
- */
-class WorldMapProjection {
-    constructor() {
-        if (this.constructor == WorldMapProjection)
-            throw new Error("Abstract classes cannot be instantiated.");
-    }
-
-    transformLongitude(longitude) {
-        throw new Error("Method 'transformLongitude()' must be implemented.");
-    }
-
-    transformLatitude(latitude) {
-        throw new Error("Method 'transformLatitude()' must be implemented.");
-    }
-
-    transformLongLat(longlat) {
-        return [this.transformLongitude(longlat[0]), this.transformLatitude(longlat[1])];
-    }
-}
-
-/**
- * GallPetersProjection is a concrete class that implements the methods in WorldMapProjection.
- */
-
-class GallPetersProjection extends WorldMapProjection {
-    constructor() {
-        super();
-    }
-
-    transformLongitude(longitude) {
-        let longitudeInRadians = longitude * Math.PI / 180;
-        return longitudeInRadians * 100 / Math.SQRT2;
-    }
-
-    transformLatitude(latitude) {
-        let latitudeInRadians = latitude * Math.PI / 180;
-        return 100 * Math.SQRT2 * Math.sin(latitudeInRadians);
-    }
 }

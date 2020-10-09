@@ -12,12 +12,24 @@
 <script src="{{ url_for('static', filename='oboe-browser.js') }}"></script>
 <script src="{{ url_for('static', filename='tinycolor.js') }}"></script>
 <script src="{{ url_for('static', filename='cartogram3.js') }}?v={{cartogram_version}}"></script>
+<script src="{{ url_for('static', filename='cartsurvey.js') }}"></script>
 
 
     <script>
       window.onload = function() {
 
             window.cartogram = new Cartogram("{{cartogram_url}}", "{{cartogramui_url}}", "{{cartogram_data_dir}}", "{{url_for('gridedit')}}","{{getprogress_url}}", "{{cartogram_version}}");
+
+            cartsurvey_init("/3maps", "static/surveys/data", "static/surveys", "/survey/");
+
+            window.cartsurvey.load_survey("{{survey_name}}").then(function(){
+
+                window.cartsurvey.display_question({{survey_question}});
+
+            }, function(e){
+                window.cartogram.doFatalError("There was a problem loading the survey.");
+            })
+
 
 
             // When user uses the dropdown list and changes the map

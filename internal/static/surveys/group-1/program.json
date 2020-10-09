@@ -1,0 +1,16 @@
+{
+  "questions": [
+    {
+      "map": "nepal",
+      "type": "cartogram",
+      "data": "nepal_cattle_2018",
+      "hide": [3],
+      "interactive": {
+        "deactivate": [
+          "gridlines",
+          "selectable"
+        ]
+      }
+    }
+  ]
+}

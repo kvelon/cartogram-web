@@ -96,6 +96,7 @@
          <div class="col-md-6">
            <div class="row">
              <div class="col-5">
+             <input type="button" class="btn btn-primary mb-2 d-block w-100" value="Previous Question" onclick="clearFileInput(document.getElementById('csv'));document.getElementById('csv').click();" id="upload-button"/>
                 <select class="form-control border-primary bg-primary text-light" id="handler">
                     {% for handler in cartogram_handlers %}
                     <option value="{{handler.id}}" {% if handler.id == default_cartogram_handler %}selected{% endif %} >{{handler.display_name}}</option>
@@ -103,8 +104,7 @@
                   </select>
              </div>
              <div class="col-4">
-                <input type="button" class="btn btn-primary mb-2 d-block w-100" value="Upload Data" onclick="clearFileInput(document.getElementById('csv'));document.getElementById('csv').click();" id="upload-button"/>
-                <input type="button" class="btn btn-primary mb-2 d-block w-100" value="Edit" id="edit-button"  onclick="window.cartogram.launchGridEdit();" disabled/>
+                <input type="button" class="btn btn-primary mb-2 d-block w-100" value="Next Question" onclick="clearFileInput(document.getElementById('csv'));document.getElementById('csv').click();" id="upload-button"/>
              </div>
            </div>
            <p id="non-fatal-error" class="text-danger font-weight-bold"></p>

@@ -227,8 +227,9 @@ if settings.USE_DATABASE:
 def get_random_string(length):
     return ''.join(random.SystemRandom().choice(string.ascii_lowercase + string.digits) for _ in range(length))
 
-@app.route('/survey', methods=['GET'])
-def survey():
+@app.route('/survey/<survey_name>', defaults={'survey_question':'0'})
+@app.route('/survey/<survey_name>/<survey_question>', methods=['GET'])
+def survey(survey_name, survey_question):
     cartogram_handlers_select = []
 
     for key, handler in cartogram_handlers.items():
@@ -242,7 +243,8 @@ def survey():
                            cartogram_data_dir=url_for('static', filename='cartdata'),
                            cartogram_handlers=cartogram_handlers_select,
                            default_cartogram_handler=default_cartogram_handler, cartogram_version=settings.VERSION,
-                           tracking=tracking.determine_tracking_action(request))
+                           tracking=tracking.determine_tracking_action(request),
+                           survey_name=survey_name, survey_question=int(survey_question))
 
 
 @app.route('/consent', methods=['POST'])
