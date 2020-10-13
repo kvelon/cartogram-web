@@ -1,6 +1,6 @@
 function cartsurvey_init(t_u,d_u,s_u,sui_u,) {
 
-    window.cartogram.scaling_factor = 1.7;
+    // window.cartogram.scaling_factor = 1.7;
 
     window.cartsurvey = {
 
@@ -184,9 +184,9 @@ function cartsurvey_init(t_u,d_u,s_u,sui_u,) {
             else if(question.type == "population")
             {
                 if(question.hasOwnProperty('colors'))
-                    window.cartogram.switch_cartogram_type(question.map, this.http_get(this.data_base_url + "/" + question.colors + ".json"));
+                    window.cartogram.switchMap(question.map, question.map, null, this.http_get(this.data_base_url + "/" + question.colors + ".json"));
                 else
-                    window.cartogram.switch_cartogram_type(question.map);
+                    window.cartogram.switchMap(question.map, question.map);
 
                 document.getElementById('interactivity-message').innerText = this.interactivity_message([
                     {'name': 'legend', 'description': 'legend'},
@@ -197,34 +197,58 @@ function cartsurvey_init(t_u,d_u,s_u,sui_u,) {
             }
             else if(question.type == "cartogram")
             {
+
                 this.enter_loading_state();
 
-                Promise.all([this.http_get(this.data_base_url + "/" + question.data + "_cartogramui.json"), this.http_get(this.data_base_url + "/" + question.data + "_cartogram.json"), window.cartogram.get_labels(question.map), window.cartogram.get_config(question.map), window.cartogram.get_abbreviations(question.map)]).then(function(data){
+                Promise.all([this.http_get(this.data_base_url + "/" + question.data + "_cartogramui.json"),
+                    this.http_get(this.data_base_url + "/" + question.data + "_cartogram.json"),
+                    window.cartogram.getMapPack(question.map),
+                    window.cartogram.getLabels(question.map),
+                    window.cartogram.getConfig(question.map),
+                    window.cartogram.getAbbreviations(question.map)]).then(function(data){
 
-                    window.cartogram.color_data = data[0].color_data;
-                    window.cartogram.map_config = data[3];
-                    window.cartogram.abbreviations = data[4];
+                    let mappack = data[2];
+                    let cartMap = new CartMap(question.map, mappack.config);
 
-                    window.cartogram.draw_three_maps(window.cartogram.get_pregenerated_map(question.map, "original"), data[1], window.cartogram.get_pregenerated_map(question.map, "population"), "map-area", "cartogram-area", "Land Area", data[0].tooltip.label, "Human Population",data[2]).then(function(v){
+                    const extrema = {
+                                    min_x: data[1].bbox[0],
+                                    min_y: data[1].bbox[1],
+                                    max_x: data[1].bbox[2],
+                                    max_y: data[1].bbox[3]
+                                    };
 
-                        window.cartogram.tooltip_clear();
-                        window.cartogram.tooltip_initialize();
-                        window.cartogram.tooltip.push(v[0].tooltip);
-                        window.cartogram.tooltip.push(v[2].tooltip);
-                        window.cartogram.tooltip.push(data[0].tooltip);
+                    window.cartogram.addVersion("3-cartogram", new MapVersionData(data[1].features, extrema,null,
+                        mappack.abbreviations,mappack.labels,MapDataFormat.GEOJSON, false))
 
-                        window.cartogram.exit_loading_state();
-                        document.getElementById('cartogram').style.display = 'block';
+                    cartMap.drawVersion("1-conventional", "map-area", ["map-area", "cartogram-area"]);
+                    cartMap.drawVersion("3-cartogram", "cartogram-area", ["map-area", "cartogram-area"]);
 
-                        document.getElementById('interactivity-message').innerText = window.cartsurvey.interactivity_message([
-                            {'name': 'tooltip', 'description': 'infotips'},
-                            {'name': 'highlight', 'description': 'parallel highlighting'},
-                            {'name': 'switching', 'description': 'map switching'}
-                        ], question.hasOwnProperty("interactive") ? question.interactive.deactivate : []);
+                    window.cartogram.exitLoadingState();
 
-                    }, function(e){
-                        window.cartogram.doFatalError(e);
-                    });
+                    // window.cartogram.model.map.colors = data[0].color_data;
+                    // window.cartogram.model.map.config = data[3];
+                    // // window.cartogram.abbreviations = data[4];
+
+                    // window.cartogram.draw_three_maps(window.cartogram.get_pregenerated_map(question.map, "original"), data[1], window.cartogram.get_pregenerated_map(question.map, "population"), "map-area", "cartogram-area", "Land Area", data[0].tooltip.label, "Human Population",data[2]).then(function(v){
+                    //
+                    //     window.cartogram.tooltip_clear();
+                    //     window.cartogram.tooltip_initialize();
+                    //     window.cartogram.tooltip.push(v[0].tooltip);
+                    //     window.cartogram.tooltip.push(v[2].tooltip);
+                    //     window.cartogram.tooltip.push(data[0].tooltip);
+                    //
+                    //     window.cartogram.exitLoadingState();
+                    //     document.getElementById('cartogram').style.display = 'block';
+                    //
+                    //     document.getElementById('interactivity-message').innerText = window.cartsurvey.interactivity_message([
+                    //         {'name': 'tooltip', 'description': 'infotips'},
+                    //         {'name': 'highlight', 'description': 'parallel highlighting'},
+                    //         {'name': 'switching', 'description': 'map switching'}
+                    //     ], question.hasOwnProperty("interactive") ? question.interactive.deactivate : []);
+                    //
+                    // }, function(e){
+                    //     window.cartogram.doFatalError(e);
+                    // });
 
                 }, function(e){
                     window.cartogram.doFatalError(e);

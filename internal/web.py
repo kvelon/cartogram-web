@@ -230,13 +230,16 @@ def get_random_string(length):
 @app.route('/survey/<survey_name>', defaults={'survey_question':'0'})
 @app.route('/survey/<survey_name>/<survey_question>', methods=['GET'])
 def survey(survey_name, survey_question):
-    cartogram_handlers_select = []
+    # cartogram_handlers_select = []
+    #
+    # for key, handler in cartogram_handlers.items():
+    #     for selector_name in handler.selector_names():
+    #         cartogram_handlers_select.append({'id': key, 'display_name': selector_name})
+    #
+    # cartogram_handlers_select.sort(key=lambda h: h['display_name'])
 
-    for key, handler in cartogram_handlers.items():
-        for selector_name in handler.selector_names():
-            cartogram_handlers_select.append({'id': key, 'display_name': selector_name})
-
-    cartogram_handlers_select.sort(key=lambda h: h['display_name'])
+    cartogram_handlers_select = [{'id': key, 'display_name': handler.get_name()} for key, handler in
+                                 cartogram_handlers.items()]
 
     return render_template('survey.html', page_active='survey', cartogram_url=url_for('cartogram'),
                            cartogramui_url=url_for('cartogram_ui'), getprogress_url=url_for('getprogress'),

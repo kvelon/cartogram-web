@@ -24,7 +24,7 @@
 
             window.cartsurvey.load_survey("{{survey_name}}").then(function(){
 
-                window.cartsurvey.display_question({{survey_question}});
+                window.cartsurvey.display_question({{survey_question|safe}});
 
             }, function(e){
                 window.cartogram.doFatalError("There was a problem loading the survey.");

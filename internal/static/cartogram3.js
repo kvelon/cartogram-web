@@ -2366,6 +2366,9 @@ class Cartogram {
      */
     doFatalError(err) {
 
+        console.log(err.message);
+        console.log(this.extended_error_info);
+
         document.getElementById('error-message').innerHTML = err.message;
 
         document.getElementById('loading').style.display = 'none';

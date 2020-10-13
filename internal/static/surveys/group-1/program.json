@@ -2,7 +2,7 @@
   "questions": [
     {
       "map": "nepal",
-      "type": "cartogram",
+      "type": "population",
       "data": "nepal_cattle_2018",
       "hide": [3],
       "interactive": {
