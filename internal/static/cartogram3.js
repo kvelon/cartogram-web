@@ -577,9 +577,9 @@ class MapVersionData {
                                 holes: polygon_holes
                             }
                         ],
-                        // name: tooltip.data["id_" + feature.properties.cartogram_id]["name"],
-                        // value: tooltip.data["id_" + feature.properties.cartogram_id]["value"],
-                        // abbreviation: abbreviations !== null ? abbreviations[tooltip.data["id_" + feature.properties.cartogram_id]["name"]] : ""
+                        name: tooltip.data["id_" + feature.properties.cartogram_id]["name"],
+                        value: tooltip.data["id_" + feature.properties.cartogram_id]["value"],
+                        abbreviation: abbreviations !== null ? abbreviations[tooltip.data["id_" + feature.properties.cartogram_id]["name"]] : ""
                     }
 
                     break;
@@ -667,12 +667,12 @@ class MapVersionData {
         /**
          * @type {string}
          */
-        // this.name = tooltip.label;
+        this.name = tooltip.label;
 
         /**
          * @type {string}
          */
-        // this.unit = tooltip.unit;
+        this.unit = tooltip.unit;
 
         /**
          * @type {Labels}

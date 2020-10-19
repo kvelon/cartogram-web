@@ -114,7 +114,9 @@
 
        <input type="file" name="csv" id="csv" class="form-control-file" accept="text/csv,.csv" style="display: none" onchange="if(this.value != null) { window.cartogram.requestAndDrawCartogram(); }"/>
 
-       <div id="loading">
+       <p id="interactivity-message" class="lead"></p>
+
+        <div id="loading">
           <p style="font-weight: bold">Loading...</p>
 
           <div class="row" id="loading-progress-container" style="display: none">

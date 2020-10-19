@@ -80,11 +80,15 @@ function cartsurvey_init(t_u,d_u,s_u,sui_u,) {
             });
 
         },
-        interactivity_message: function(all_features, deactivations){
+        interactivity_message: function(deactivations){
+            const features = [
+                {'name': 'legend', 'description': 'legend'},
+                {'name': 'gridlines', 'description': 'grid lines'},
+                {'name': 'selectable', 'description': 'selectable legend'}];
 
-            var enabled_feautures = [];
+            let enabled_feautures = [];
 
-            all_features.forEach(function(feature){
+            features.forEach(function(feature){
 
                 if(!deactivations.includes(feature.name))
                     enabled_feautures.push(feature.description);
@@ -92,27 +96,39 @@ function cartsurvey_init(t_u,d_u,s_u,sui_u,) {
             });
 
             if(enabled_feautures.length == 0)
+
                 return "You have access to no interactive features.";
 
-            if(enabled_feautures.length == 1)
+            else if(enabled_feautures.length == 1)
+
                 return "You have access to the " + enabled_feautures[0] + " feature.";
 
-            var msg = "You have access to the ";
+            else {
 
-            for(let i = 0; i < enabled_feautures.length; i++)
-            {
-                if(i == (enabled_feautures.length - 1))
-                    msg += " and";
+                let msg = "You have access to the ";
 
-                msg += " " + enabled_feautures[i];
+                for (let i = 0; i < enabled_feautures.length; i++) {
 
-                if(i != (enabled_feautures.length - 1) && enabled_feautures.length != 2)
-                    msg += ",";
+                    msg += enabled_feautures[i];
+
+                    if(i == (enabled_feautures.length - 2))
+                        msg += " and ";
+                    else if (i != enabled_feautures.length-1)
+                        msg += ", ";
+
+                // if(i != (enabled_feautures.length - 1) && enabled_feautures.length != 2)
+                //     msg += ",";
+                }
+
+                msg += " features.";
+
+                return msg;
+
             }
 
-            msg += " features.";
 
-            return msg;
+
+
 
         },
         display_question: function(id) {
@@ -187,11 +203,11 @@ function cartsurvey_init(t_u,d_u,s_u,sui_u,) {
                 else
                     window.cartogram.switchMap(question.map, question.map);
 
-                // document.getElementById('interactivity-message').innerText = this.interactivity_message([
-                //     {'name': 'legend', 'description': 'legend'},
-                //     {'name': 'gridlines', 'description': 'grid lines'},
-                //     {'name': 'selectable', 'description': 'selectable legend'}
-                // ], question.hasOwnProperty("interactive") ? question.interactive.deactivate : []);
+                document.getElementById('interactivity-message').innerText = this.interactivity_message([
+                    {'name': 'legend', 'description': 'legend'},
+                    {'name': 'gridlines', 'description': 'grid lines'},
+                    {'name': 'selectable', 'description': 'selectable legend'}
+                ], question.hasOwnProperty("interactive") ? question.interactive.deactivate : []);
 
             }
             else if(question.type == "cartogram")
@@ -217,28 +233,37 @@ function cartsurvey_init(t_u,d_u,s_u,sui_u,) {
                                     max_y: data[1].bbox[3]
                                     };
 
-                    let cartogramData = new MapVersionData(data[1].features, extrema, null, null, null,
+                    let cartogramData = new MapVersionData(data[1].features, extrema, data[0].tooltip, null, null,
                                                             MapDataFormat.GEOJSON, false);
 
 
                     cartMap.addVersion("1-conventional", new MapVersionData(mappack.original.features, extrema, mappack.original.tooltip, mappack.abbreviations, mappack.labels, MapDataFormat.GEOJSON, false));
-
                     cartMap.addVersion("3-cartogram", cartogramData);
 
-                        // mappack.abbreviations,mappack.labels,MapDataFormat.GEOJSON, false))
+                    let colors = {};
+
+                    Object.keys(cartMap.regions).forEach(function(region_id){
+
+                        colors[region_id] = mappack.colors["id_" + region_id];
+
+                    }, this);
+
+                    cartMap.colors = colors;
 
                     cartMap.drawVersion("1-conventional", "map-area", ["map-area", "cartogram-area"]);
                     cartMap.drawVersion("3-cartogram", "cartogram-area", ["map-area", "cartogram-area"]);
 
-                    this.model.map.drawLegend("1-conventional", "map-area-legend");
-                    this.model.map.drawLegend(this.model.current_sysname, "cartogram-area-legend");
-
-                    this.model.map.drawGridLines("1-conventional", "map-area-svg");
-                    this.model.map.drawGridLines(this.model.current_sysname, "cartogram-area-svg");
-
                     window.cartogram.exitLoadingState();
+                    document.getElementById('cartogram').style.display = 'block';
 
-                    // window.cartogram.switchMap(question.map, question.map, cartogramData);
+                    cartMap.drawLegend("1-conventional", "map-area-legend");
+                    cartMap.drawLegend("3-cartogram", "cartogram-area-legend");
+
+                    cartMap.drawGridLines("1-conventional", "map-area-svg");
+                    cartMap.drawGridLines("3-cartogram", "cartogram-area-svg");
+
+                    // window.cartogram.switchMap(question.map, question.map);
+
 
                     // window.cartogram.model.map.colors = data[0].color_data;
                     // window.cartogram.model.map.config = data[3];

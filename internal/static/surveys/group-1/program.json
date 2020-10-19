@@ -1,11 +1,13 @@
 {
   "questions": [
     {
-      "map": "india",
-      "type": "population",
+      "map": "nepal",
+      "type": "cartogram",
+      "data": "nepal_cattle_2018",
       "hide": [3],
       "interactive": {
         "deactivate": [
+          "legend",
           "gridlines",
           "selectable"
         ]
