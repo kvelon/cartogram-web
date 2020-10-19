@@ -88,7 +88,7 @@
          <div class="col-md-6">
            <div class="row" style="padding-left: 20px;">
                <p class="lead" style="font-size: 35px;">
-                   <span>Question </span><span id="question-number">1</span><span>:</span>
+                   <span>Question </span><span id="question-no">1</span><span>:</span>
                </p>
            </div>
          </div>
@@ -96,7 +96,7 @@
          <div class="col-md-6">
            <div class="row">
              <div class="col-5">
-             <input type="button" class="btn btn-primary mb-2 d-block w-100" value="Previous Question" onclick="clearFileInput(document.getElementById('csv'));document.getElementById('csv').click();" id="upload-button"/>
+             <input id='prev-button' type="button" class="btn btn-primary mb-2 d-block w-100" value="Previous Question" onclick="clearFileInput(document.getElementById('csv'));document.getElementById('csv').click();" id="upload-button"/>
 {#                <select class="form-control border-primary bg-primary text-light" id="handler">#}
 {#                    {% for handler in cartogram_handlers %}#}
 {#                    <option value="{{handler.id}}" {% if handler.id == default_cartogram_handler %}selected{% endif %} >{{handler.display_name}}</option>#}
@@ -104,7 +104,7 @@
 {#                  </select>#}
              </div>
              <div class="col-4">
-                <input type="button" class="btn btn-primary mb-2 d-block w-100" value="Next Question" onclick="clearFileInput(document.getElementById('csv'));document.getElementById('csv').click();" id="upload-button"/>
+                <input id='next-button' type="button" class="btn btn-primary mb-2 d-block w-100" value="Next Question" onclick="clearFileInput(document.getElementById('csv'));document.getElementById('csv').click();" id="upload-button"/>
              </div>
            </div>
            <p id="non-fatal-error" class="text-danger font-weight-bold"></p>
@@ -168,7 +168,7 @@
 
               <div style="height: 40px">
                   <h4 class="mb-0">Conventional Map</h4>
-                  <!--<p id="tooltip">&nbsp;</p>-->
+                  <p id="tooltip">&nbsp;</p>
                 </div>
 
 
@@ -186,7 +186,7 @@
                   <div class="d-flex align-items-center">
                       <h4 class="d-inline-block mb-0">Cartogram</h4>
                       <div id="map2-switch" class="ml-2">
-                          <div  id="map2-switch-buttons"></div>
+                          <div  id="map2-switch-buttons" style="display:none"></div>
                         </div>
 
                   </div>

@@ -577,9 +577,9 @@ class MapVersionData {
                                 holes: polygon_holes
                             }
                         ],
-                        name: tooltip.data["id_" + feature.properties.cartogram_id]["name"],
-                        value: tooltip.data["id_" + feature.properties.cartogram_id]["value"],
-                        abbreviation: abbreviations !== null ? abbreviations[tooltip.data["id_" + feature.properties.cartogram_id]["name"]] : ""
+                        // name: tooltip.data["id_" + feature.properties.cartogram_id]["name"],
+                        // value: tooltip.data["id_" + feature.properties.cartogram_id]["value"],
+                        // abbreviation: abbreviations !== null ? abbreviations[tooltip.data["id_" + feature.properties.cartogram_id]["name"]] : ""
                     }
 
                     break;
@@ -667,12 +667,12 @@ class MapVersionData {
         /**
          * @type {string}
          */
-        this.name = tooltip.label;
+        // this.name = tooltip.label;
 
         /**
          * @type {string}
          */
-        this.unit = tooltip.unit;
+        // this.unit = tooltip.unit;
 
         /**
          * @type {Labels}
@@ -1093,25 +1093,25 @@ class CartMap {
             legendText.append('tspan')
                 .text(scalePowerOf10)
                 .style("font-size", "10px")
-                .attr("dy", "-10px")
+                .attr("dy", "-10px");
             legendText.append('tspan')
                 .text(unit)
                 .attr("dy", "10px")
-                .attr("dx", "8px")
+                .attr("dx", "8px");
         }
 
         // Event for when a different legend size is selected.
         const legendNumber = d3.select("#" + legendSVGID + "-number").text();
         legendSquareC.on("click", function() {
                             selectedLegend = "C"
-                            d3.select("#" + legendSVGID + "C").attr('fill', '#FFFFFF')
-                            d3.select("#" + legendSVGID + "B").attr('fill', '#FFFFFF')
-                            d3.select("#" + legendSVGID + "A").attr('fill', '#FFFFFF')
+                            d3.select("#" + legendSVGID + "C").attr('fill', '#FFFFFF');
+                            d3.select("#" + legendSVGID + "B").attr('fill', '#FFFFFF');
+                            d3.select("#" + legendSVGID + "A").attr('fill', '#FFFFFF');
 
                             d3.select("#" + legendSVGID.substring(0, legendSVGID.length-6) + "grid-path")
                                 .transition()
                                 .duration(1000)
-                                .attr('d', gridC)
+                                .attr('d', gridC);
 
                             d3.select("#" + legendSVGID + "-number")
                               .text(parseInt(legendNumber.substring(0,1))/scaleNiceNumberA*scaleNiceNumberC + legendNumber.substring(1, legendNumber.length));
@@ -1125,14 +1125,14 @@ class CartMap {
 
         legendSquareB.on("click", function() {
                             selectedLegend = "B"
-                            d3.select("#" + legendSVGID + "C").attr('fill', '#EEEEEE')
-                            d3.select("#" + legendSVGID + "B").attr('fill', '#FFFFFF')
-                            d3.select("#" + legendSVGID + "A").attr('fill', '#FFFFFF')
+                            d3.select("#" + legendSVGID + "C").attr('fill', '#EEEEEE');
+                            d3.select("#" + legendSVGID + "B").attr('fill', '#FFFFFF');
+                            d3.select("#" + legendSVGID + "A").attr('fill', '#FFFFFF');
 
                             d3.select("#" + legendSVGID.substring(0, legendSVGID.length-6) + "grid-path")
                                 .transition()
                                 .duration(1000)
-                                .attr('d', gridB)
+                                .attr('d', gridB);
 
                             d3.select("#" + legendSVGID + "-number")
                               .text(parseInt(legendNumber.substring(0,1))/scaleNiceNumberA*scaleNiceNumberB + legendNumber.substring(1, legendNumber.length));
@@ -1145,9 +1145,9 @@ class CartMap {
 
         legendSquareA.on("click", function() {
                             selectedLegend = "A"
-                            d3.select("#" + legendSVGID + "C").attr('fill', '#EEEEEE')
-                            d3.select("#" + legendSVGID + "B").attr('fill', '#EEEEEE')
-                            d3.select("#" + legendSVGID + "A").attr('fill', '#FFFFFF')
+                            d3.select("#" + legendSVGID + "C").attr('fill', '#EEEEEE');
+                            d3.select("#" + legendSVGID + "B").attr('fill', '#EEEEEE');
+                            d3.select("#" + legendSVGID + "A").attr('fill', '#FFFFFF');
 
                             d3.select("#" + legendSVGID.substring(0, legendSVGID.length-6) + "grid-path")
                                 .transition()
@@ -1546,14 +1546,14 @@ class CartMap {
 
                         CartMap.highlightByID(where_drawn, d.region_id, d.color, true);
 
-                        map.drawTooltip(d3.event, d.region_id);
+                        // map.drawTooltip(d3.event, d.region_id);
 
                     };
           }(this, where_drawn)))
           .on('mousemove', (function(map){
                 return function(d, i){
 
-                    map.drawTooltip(d3.event, d.region_id);
+                    // map.drawTooltip(d3.event, d.region_id);
             };}(this)))
           .on('mouseleave', (function(map, where_drawn){
                 return function(d, i){
@@ -2431,7 +2431,7 @@ class Cartogram {
         /* Disable interaction with the upload form */
         // document.getElementById('upload-button').disabled = true;
         // document.getElementById('edit-button').disabled = true;
-        document.getElementById('handler').disabled = true;
+        //ocument.getElementById('handler').disabled = true;
 
         /* If GridEdit is open, disable updating */
         if(this.model.gridedit_window !== null && !this.model.gridedit_window.closed && typeof(this.model.gridedit_window.gridedit) === "object")
@@ -2482,7 +2482,7 @@ class Cartogram {
         document.getElementById('loading').style.display = 'none';
         // document.getElementById('upload-button').disabled = false;
         // document.getElementById('edit-button').disabled = this.editButtonDisabled();
-        document.getElementById('handler').disabled = false;
+        //document.getElementById('handler').disabled = false;
 
         /* If GridEdit is open, enable updating */
         if(this.model.gridedit_window !== null && !this.model.gridedit_window.closed && typeof(this.model.gridedit_window.gridedit) === "object")
@@ -3087,7 +3087,6 @@ class Cartogram {
         this.showProgressBar();
 
         this.getMapPack(sysname).then(function(mappack){
-
             var map = new CartMap(hrname, mappack.config);
 
             /* We check if the map is a world map by searching for the 'extent' key in mappack.original.
@@ -3167,8 +3166,8 @@ class Cartogram {
 
             // this.generateSocialMediaLinks(window.location.href);
             // this.generateSVGDownloadLinks();
-            this.displayVersionSwitchButtons();
-            this.updateGridDocument(mappack.griddocument);
+            // this.displayVersionSwitchButtons();
+            // this.updateGridDocument(mappack.griddocument);
 
             // The following line draws the conventional legend when the page first loads.
             this.model.map.drawLegend("1-conventional", "map-area-legend");

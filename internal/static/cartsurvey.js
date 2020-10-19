@@ -67,7 +67,6 @@ function cartsurvey_init(t_u,d_u,s_u,sui_u,) {
             return new Promise(function(resolve,reject){
 
                 window.cartsurvey.enter_loading_state();
-
                 window.cartsurvey.http_get(window.cartsurvey.surveys_base_url + "/" + name + "/program.json").then(function(program){
 
                     window.cartsurvey.program = program;
@@ -188,17 +187,18 @@ function cartsurvey_init(t_u,d_u,s_u,sui_u,) {
                 else
                     window.cartogram.switchMap(question.map, question.map);
 
-                document.getElementById('interactivity-message').innerText = this.interactivity_message([
-                    {'name': 'legend', 'description': 'legend'},
-                    {'name': 'gridlines', 'description': 'grid lines'},
-                    {'name': 'selectable', 'description': 'selectable legend'}
-                ], question.hasOwnProperty("interactive") ? question.interactive.deactivate : []);
+                // document.getElementById('interactivity-message').innerText = this.interactivity_message([
+                //     {'name': 'legend', 'description': 'legend'},
+                //     {'name': 'gridlines', 'description': 'grid lines'},
+                //     {'name': 'selectable', 'description': 'selectable legend'}
+                // ], question.hasOwnProperty("interactive") ? question.interactive.deactivate : []);
 
             }
             else if(question.type == "cartogram")
             {
 
                 this.enter_loading_state();
+                window.cartogram.showProgressBar();
 
                 Promise.all([this.http_get(this.data_base_url + "/" + question.data + "_cartogramui.json"),
                     this.http_get(this.data_base_url + "/" + question.data + "_cartogram.json"),
@@ -217,13 +217,28 @@ function cartsurvey_init(t_u,d_u,s_u,sui_u,) {
                                     max_y: data[1].bbox[3]
                                     };
 
-                    window.cartogram.addVersion("3-cartogram", new MapVersionData(data[1].features, extrema,null,
-                        mappack.abbreviations,mappack.labels,MapDataFormat.GEOJSON, false))
+                    let cartogramData = new MapVersionData(data[1].features, extrema, null, null, null,
+                                                            MapDataFormat.GEOJSON, false);
+
+
+                    cartMap.addVersion("1-conventional", new MapVersionData(mappack.original.features, extrema, mappack.original.tooltip, mappack.abbreviations, mappack.labels, MapDataFormat.GEOJSON, false));
+
+                    cartMap.addVersion("3-cartogram", cartogramData);
+
+                        // mappack.abbreviations,mappack.labels,MapDataFormat.GEOJSON, false))
 
                     cartMap.drawVersion("1-conventional", "map-area", ["map-area", "cartogram-area"]);
                     cartMap.drawVersion("3-cartogram", "cartogram-area", ["map-area", "cartogram-area"]);
 
+                    this.model.map.drawLegend("1-conventional", "map-area-legend");
+                    this.model.map.drawLegend(this.model.current_sysname, "cartogram-area-legend");
+
+                    this.model.map.drawGridLines("1-conventional", "map-area-svg");
+                    this.model.map.drawGridLines(this.model.current_sysname, "cartogram-area-svg");
+
                     window.cartogram.exitLoadingState();
+
+                    // window.cartogram.switchMap(question.map, question.map, cartogramData);
 
                     // window.cartogram.model.map.colors = data[0].color_data;
                     // window.cartogram.model.map.config = data[3];
