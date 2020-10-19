@@ -7,7 +7,6 @@
       "hide": [3],
       "interactive": {
         "deactivate": [
-          "legend",
           "gridlines",
           "selectable"
         ]

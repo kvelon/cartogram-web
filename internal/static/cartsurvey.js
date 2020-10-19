@@ -116,8 +116,6 @@ function cartsurvey_init(t_u,d_u,s_u,sui_u,) {
                     else if (i != enabled_feautures.length-1)
                         msg += ", ";
 
-                // if(i != (enabled_feautures.length - 1) && enabled_feautures.length != 2)
-                //     msg += ",";
                 }
 
                 msg += " features.";
@@ -125,10 +123,6 @@ function cartsurvey_init(t_u,d_u,s_u,sui_u,) {
                 return msg;
 
             }
-
-
-
-
 
         },
         display_question: function(id) {
@@ -203,11 +197,8 @@ function cartsurvey_init(t_u,d_u,s_u,sui_u,) {
                 else
                     window.cartogram.switchMap(question.map, question.map);
 
-                document.getElementById('interactivity-message').innerText = this.interactivity_message([
-                    {'name': 'legend', 'description': 'legend'},
-                    {'name': 'gridlines', 'description': 'grid lines'},
-                    {'name': 'selectable', 'description': 'selectable legend'}
-                ], question.hasOwnProperty("interactive") ? question.interactive.deactivate : []);
+                document.getElementById('interactivity-message').innerText = this.interactivity_message(
+                    question.hasOwnProperty("interactive") ? question.interactive.deactivate : []);
 
             }
             else if(question.type == "cartogram")
@@ -226,18 +217,23 @@ function cartsurvey_init(t_u,d_u,s_u,sui_u,) {
                     let mappack = data[2];
                     let cartMap = new CartMap(question.map, mappack.config);
 
-                    const extrema = {
+                    const extrema_original = {
+                        min_x: mappack.original.bbox[0],
+                        min_y: mappack.original.bbox[1],
+                        max_x: mappack.original.bbox[2],
+                        max_y: mappack.original.bbox[3]
+                    };
+                    const extrema_cartogram = {
                                     min_x: data[1].bbox[0],
                                     min_y: data[1].bbox[1],
                                     max_x: data[1].bbox[2],
                                     max_y: data[1].bbox[3]
                                     };
 
-                    let cartogramData = new MapVersionData(data[1].features, extrema, data[0].tooltip, null, null,
+                    let cartogramData = new MapVersionData(data[1].features, extrema_cartogram, data[0].tooltip, null, null,
                                                             MapDataFormat.GEOJSON, false);
 
-
-                    cartMap.addVersion("1-conventional", new MapVersionData(mappack.original.features, extrema, mappack.original.tooltip, mappack.abbreviations, mappack.labels, MapDataFormat.GEOJSON, false));
+                    cartMap.addVersion("1-conventional", new MapVersionData(mappack.original.features, extrema_original, mappack.original.tooltip, mappack.abbreviations, mappack.labels, MapDataFormat.GEOJSON, false));
                     cartMap.addVersion("3-cartogram", cartogramData);
 
                     let colors = {};
@@ -256,43 +252,22 @@ function cartsurvey_init(t_u,d_u,s_u,sui_u,) {
                     window.cartogram.exitLoadingState();
                     document.getElementById('cartogram').style.display = 'block';
 
+
                     cartMap.drawLegend("1-conventional", "map-area-legend");
                     cartMap.drawLegend("3-cartogram", "cartogram-area-legend");
 
-                    cartMap.drawGridLines("1-conventional", "map-area-svg");
-                    cartMap.drawGridLines("3-cartogram", "cartogram-area-svg");
+                    if (window.cartogram.config.enableGridlines) {
+                        cartMap.drawGridLines("1-conventional", "map-area-svg");
+                        cartMap.drawGridLines("3-cartogram", "cartogram-area-svg");
+                    }
 
-                    // window.cartogram.switchMap(question.map, question.map);
-
-
-                    // window.cartogram.model.map.colors = data[0].color_data;
-                    // window.cartogram.model.map.config = data[3];
-                    // // window.cartogram.abbreviations = data[4];
-
-                    // window.cartogram.draw_three_maps(window.cartogram.get_pregenerated_map(question.map, "original"), data[1], window.cartogram.get_pregenerated_map(question.map, "population"), "map-area", "cartogram-area", "Land Area", data[0].tooltip.label, "Human Population",data[2]).then(function(v){
-                    //
-                    //     window.cartogram.tooltip_clear();
-                    //     window.cartogram.tooltip_initialize();
-                    //     window.cartogram.tooltip.push(v[0].tooltip);
-                    //     window.cartogram.tooltip.push(v[2].tooltip);
-                    //     window.cartogram.tooltip.push(data[0].tooltip);
-                    //
-                    //     window.cartogram.exitLoadingState();
-                    //     document.getElementById('cartogram').style.display = 'block';
-                    //
-                    //     document.getElementById('interactivity-message').innerText = window.cartsurvey.interactivity_message([
-                    //         {'name': 'tooltip', 'description': 'infotips'},
-                    //         {'name': 'highlight', 'description': 'parallel highlighting'},
-                    //         {'name': 'switching', 'description': 'map switching'}
-                    //     ], question.hasOwnProperty("interactive") ? question.interactive.deactivate : []);
-                    //
-                    // }, function(e){
-                    //     window.cartogram.doFatalError(e);
-                    // });
 
                 }, function(e){
                     window.cartogram.doFatalError(e);
                 });
+
+                document.getElementById('interactivity-message').innerText = this.interactivity_message(
+                    question.hasOwnProperty("interactive") ? question.interactive.deactivate : []);
             }
             else if(question.type == "3switchable")
             {
