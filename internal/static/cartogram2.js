@@ -986,10 +986,16 @@ class CartMap {
         const valuePerPixel = versionTotalValue / (versionArea*scaleX*scaleY);
 
         // We want the smallest square to be in the whereabouts of 30px by 30 px.
-        let widthA = 30;
-        let widthB = 30;
-        let widthC = 30;
-        let valuePerSquare = valuePerPixel * widthA * widthA;
+        // let widthA = 30;
+        // let widthB = 30;
+        // let widthC = 30;
+        // let valuePerSquare = valuePerPixel * widthA * widthA;
+
+        // Each square to be in the whereabouts of 1% of versionTotalValue;
+        let valuePerSquare = versionTotalValue / 100;
+        let widthA = Math.sqrt(valuePerSquare/valuePerPixel);
+        let widthB = widthA;
+        let widthC = widthA;
 
         // Declare and assign variables for valuePerSquare's power of 10 and "nice number".
         let scalePowerOf10 = Math.floor(Math.log10(valuePerSquare));
@@ -1222,6 +1228,56 @@ class CartMap {
 
         // Update version's MapVersionData
         this.versions[sysname].legendWidth = widthA;
+    }
+
+    /**
+     * The following draws the total value for each map
+     * @param sysname
+     * @param legendSVGID
+     */
+    drawTotalValue(sysname, legendSVGID) {
+
+        const legendSVG = d3.select('#' + legendSVGID);
+
+        // Remove existing child nodes
+        // legendSVG.selectAll('*').remove();
+
+        const totalValue = legendSVG.append('text')
+                                    .attr('id', 'total-text')
+                                    .attr('x', '20') // Padding of 20px on the left
+                                    .attr('y', 20) // Padding of 20px on top
+                                    .attr('fill', '#5A5A5A');
+
+        const [versionArea, versionTotalValue] = this.getTotalAreasAndValuesForVersion(sysname);
+        const unit = this.getLegendUnit(sysname);
+        const largeNumberNames = {6: " million", 9: " billion"}
+
+        // Set total value text.
+        const totalScalePowerOfTen = Math.floor(Math.log10(versionTotalValue));
+        if (totalScalePowerOfTen > -4 && totalScalePowerOfTen < 12) {
+            if (totalScalePowerOfTen in largeNumberNames)
+                totalValue.text("Total: " + (versionTotalValue/Math.pow(10, totalScalePowerOfTen)).toPrecision(3)  + " " + largeNumberNames[totalScalePowerOfTen] + " " + unit);
+            else if (totalScalePowerOfTen > 9)
+                totalValue.text("Total: " + (versionTotalValue/Math.pow(10, 9)).toPrecision(3)  + " billion " + unit);
+            else if (totalScalePowerOfTen > 6)
+                totalValue.text("Total: " + (versionTotalValue/Math.pow(10, 6)).toPrecision(3) + " million " + unit);
+            else
+                // Else we display the total as it is
+                totalValue.text("Total: " + versionTotalValue.toLocaleString().split(',').join(' ') + " " + unit);
+        }
+        // If totalScalePowerOfTen is too extreme, we use scientific notation
+        else {
+            totalValue.append('tspan')
+                        .html("Total : " + (versionTotalValue/Math.pow(10, totalScalePowerOfTen)).toPrecision(3) + " &#xD7; 10")
+            totalValue.append('tspan')
+                        .text(totalScalePowerOfTen)
+                        .style("font-size", "10px")
+                        .attr("dy", "-10px")
+            totalValue.append('tspan')
+                        .text(unit)
+                        .attr("dy", "10px")
+                        .attr("dx", "8px")
+        }
     }
 
     /**
@@ -3110,26 +3166,6 @@ class Cartogram {
                 world = (mappack.original.extent === "world");
             }
 
-            /* If it is a world map, we add a class name to the html elements,
-               and we use this class name in implementing the CSS which draws a border
-             */
-
-            // if (world) {
-            //     let conventional_map = document.getElementById("map-area");
-            //     let cartogram_map = document.getElementById("cartogram-area");
-            //
-            //     if (!conventional_map.classList.contains('world-border')) {
-            //         conventional_map.className += "world-border";
-            //         cartogram_map.className += "world-border";
-            //     }
-            //
-            // } else {
-            //     let conventional_map = document.getElementById("map-area");
-            //     let cartogram_map = document.getElementById("cartogram-area");
-            //     conventional_map.classList.remove("world-border");
-            //     cartogram_map.classList.remove("world-border");
-            // }
-
             /* We need to find out the map format. If the extrema is located in the bbox property, then we have
                GeoJSON. Otherwise, we have the old JSON format.
             */
@@ -3205,9 +3241,13 @@ class Cartogram {
             // The following line draws the conventional legend when the page first loads.
             this.model.map.drawLegend("1-conventional", "map-area-legend");
             this.model.map.drawLegend(this.model.current_sysname, "cartogram-area-legend");
-            
+
             this.model.map.drawGridLines("1-conventional", "map-area-svg");
             this.model.map.drawGridLines(this.model.current_sysname, "cartogram-area-svg");
+
+            // this.model.map.drawTotalValue("1-conventional", "map-area-legend");
+            // this.model.map.drawTotalValue(this.model.current_sysname, "cartogram-area-legend");
+
 
             document.getElementById('template-link').href = this.config.cartogram_data_dir+ "/" + sysname + "/template.csv";
             document.getElementById('cartogram').style.display = 'block';
