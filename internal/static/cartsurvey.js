@@ -254,7 +254,6 @@ function cartsurvey_init(d_u,s_u,sui_u) {
 
                             cartogramData = new MapVersionData(data[1].features, data[1].extrema, data[0].tooltip, null, null,
                                 MapDataFormat.GOCARTJSON, false);
-
                         }
 
                         cartMap.addVersion("3-cartogram", cartogramData);
@@ -279,7 +278,15 @@ function cartsurvey_init(d_u,s_u,sui_u) {
 
                         Object.keys(cartMap.regions).forEach(function(region_id){
 
-                            colors[region_id] = mappack.colors["id_" + region_id];
+                            if (question.hasOwnProperty("colors")) {
+
+                                colors[region_id] = question.colors["id_" + region_id];
+
+                            } else {
+
+                                colors[region_id] = mappack.colors["id_" + region_id];
+
+                            }
 
                         }, this);
 
@@ -359,6 +366,7 @@ function cartsurvey_init(d_u,s_u,sui_u) {
                     let mappack = data[2];
                     let cartMap = new CartMap(question.map, mappack.config);
 
+                    // Add original
                     if (mappack.original.hasOwnProperty("bbox")) {
 
                         const extrema_original = {
@@ -376,23 +384,42 @@ function cartsurvey_init(d_u,s_u,sui_u) {
 
                     }
 
-                    const extrema_cartogram = {
-                                    min_x: data[1].bbox[0],
-                                    min_y: data[1].bbox[1],
-                                    max_x: data[1].bbox[2],
-                                    max_y: data[1].bbox[3]
-                                    };
+                    // Add cartogram
+                    let cartogramData;
 
-                    let cartogramData = new MapVersionData(data[1].features, extrema_cartogram, data[0].tooltip, null, null,
-                                                            MapDataFormat.GEOJSON, false);
+                    if (data[1].hasOwnProperty("bbox")) {
+
+                        const extrema_cartogram = {
+                        min_x: data[1].bbox[0],
+                        min_y: data[1].bbox[1],
+                        max_x: data[1].bbox[2],
+                        max_y: data[1].bbox[3]
+                        };
+
+                        cartogramData = new MapVersionData(data[1].features, extrema_cartogram, data[0].tooltip, null, null,
+                            MapDataFormat.GEOJSON, false);
+                    } else {
+
+                        cartogramData = new MapVersionData(data[1].features, data[1].extrema, data[0].tooltip, null, null,
+                            MapDataFormat.GOCARTJSON, false);
+                    }
 
                     cartMap.addVersion("3-cartogram", cartogramData);
 
+                    // Add colors
                     let colors = {};
 
                     Object.keys(cartMap.regions).forEach(function(region_id){
 
-                        colors[region_id] = mappack.colors["id_" + region_id];
+                        if (question.hasOwnProperty("colors")) {
+
+                            colors[region_id] = question.colors["id_" + region_id];
+
+                        } else {
+
+                            colors[region_id] = mappack.colors["id_" + region_id];
+
+                        }
 
                     }, this);
 
