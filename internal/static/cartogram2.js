@@ -899,6 +899,7 @@ class CartMap {
 
     }
 
+
     /**
      * The following draws the legend for each map
      * @param {string} sysname The sysname of the map version

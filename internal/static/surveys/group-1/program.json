@@ -3,11 +3,27 @@
     {
       "map": "nepal",
       "type": "cartogram",
+      "mapTitle": ["Nepal","Cattle (2018)"],
       "data": "nepal_cattle_2018",
-      "hide": [3],
       "interactive": {
         "deactivate": [
           "gridlines",
+          "selectable"
+        ]
+      }
+    },
+    {
+      "map": "israel3",
+      "type": "population",
+      "mapTitle": ["Israel","Population (2018)"]
+    },
+    {
+      "map": "india",
+      "type": "3maps",
+      "mapTitle": ["India","Population (1961)", "Population (2018)"],
+      "data": "india_population_1961",
+      "interactive": {
+        "deactivate": [
           "selectable"
         ]
       }

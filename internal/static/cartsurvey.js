@@ -1,10 +1,9 @@
-function cartsurvey_init(t_u,d_u,s_u,sui_u,) {
+function cartsurvey_init(d_u,s_u,sui_u) {
 
     // window.cartogram.scaling_factor = 1.7;
 
     window.cartsurvey = {
 
-        threemaps_base_url: t_u,
         data_base_url: d_u,
         surveys_base_url: s_u,
         surveys_ui_base_url: sui_u,
@@ -59,6 +58,32 @@ function cartsurvey_init(t_u,d_u,s_u,sui_u,) {
 
             });
         },
+
+        changeLayout: function(numberMaps) {
+
+            if (numberMaps == 2) {
+
+                document.getElementById('map-container').classList.remove("col-md-4");
+                document.getElementById('map-container').classList.add("col-md-6");
+                document.getElementById('cartogram-container').classList.remove("col-md-4");
+                document.getElementById('cartogram-container').classList.add("col-md-6");
+                document.getElementById('cartogram-container2').style.display = "none";
+
+                document.getElementsByClassName("main-content")[0].style.paddingLeft = "250px"
+            }
+
+            else if (numberMaps == 3) {
+
+                document.getElementById('map-container').classList.remove("col-md-6");
+                document.getElementById('map-container').classList.add("col-md-4");
+                document.getElementById('cartogram-container').classList.remove("col-md-6");
+                document.getElementById('cartogram-container').classList.add("col-md-4");
+                document.getElementById('cartogram-container2').style.removeProperty("display");
+
+                document.getElementsByClassName("main-content")[0].style.paddingLeft = "50px"
+            }
+        },
+
         load_survey: function(name) {
 
             if(window.cartogram.model.in_loading_state)
@@ -125,6 +150,18 @@ function cartsurvey_init(t_u,d_u,s_u,sui_u,) {
             }
 
         },
+
+        changeMapTitle: function(mapTitle) {
+
+            document.getElementById('map-title').innerText = mapTitle[0] + " Map"
+            document.getElementById("cartogram-title").innerText = mapTitle[1] + " Cartogram";
+
+            if (mapTitle.length > 2) {
+                document.getElementById("cartogram-title2").innerText = mapTitle[2] + " Cartogram"
+            }
+
+        },
+
         display_question: function(id) {
 
             if(window.cartogram.model.in_loading_state || this.program === null)
@@ -148,50 +185,15 @@ function cartsurvey_init(t_u,d_u,s_u,sui_u,) {
 
             }
 
-            if(question.hasOwnProperty("hide"))
-            {
-                window.cartogram.config.hideMapsByID = question.hide;
-            }
-            else
-            {
-                window.cartogram.config.hideMapsByID = [];
-            }
-
-            if(question.type == "url")
-            {
+            if(question.type == "url") {
                 window.location = question.url;
             }
 
-            else if(question.type == "3maps")
-            {
-                /* Redirect to the 3maps page. Specify the next URL if necessary */
+            else if(question.type == "population") {
 
-                var animurl = this.threemaps_base_url + "?hrq=" + (id + 1) + "&handler=" + question.map + "&maps=" + encodeURIComponent(window.btoa(JSON.stringify(question.maps)));
+                this.changeLayout(2);
+                this.changeMapTitle(question.mapTitle);
 
-                if(id < (this.program.questions.length - 1))
-                {
-                    animurl += "&next=" + encodeURIComponent(this.surveys_ui_base_url + this.program.name + "/" + (id + 1));
-                }
-
-                if(id != 0)
-                {
-                    animurl += "&prev=" + encodeURIComponent(this.surveys_ui_base_url + this.program.name + "/" + (id - 1));
-                }
-
-                if(question.hasOwnProperty("interactive"))
-                {
-                    animurl += "&deactivate=" + encodeURIComponent(question.interactive.deactivate.join(","));
-                }
-
-                if(question.hasOwnProperty("hide"))
-                {
-                    animurl += "&hide=" + encodeURIComponent(question.hide.join(","));
-                }
-
-                window.location = animurl;
-            }
-            else if(question.type == "population")
-            {
                 if(question.hasOwnProperty('colors'))
                     window.cartogram.switchMap(question.map, question.map, null, this.http_get(this.data_base_url + "/" + question.colors + ".json"));
                 else
@@ -201,8 +203,148 @@ function cartsurvey_init(t_u,d_u,s_u,sui_u,) {
                     question.hasOwnProperty("interactive") ? question.interactive.deactivate : []);
 
             }
-            else if(question.type == "cartogram")
-            {
+
+            else if(question.type == "3maps") {
+
+                this.changeLayout(3);
+                this.changeMapTitle(question.mapTitle);
+
+                this.enter_loading_state();
+                window.cartogram.showProgressBar();
+
+                if (!Array.isArray(question.data)) {
+
+                    Promise.all([this.http_get(this.data_base_url + "/" + question.data + "_cartogramui.json"),
+                        this.http_get(this.data_base_url + "/" + question.data + "_cartogram.json"),
+                        window.cartogram.getMapPack(question.map)]).then(function(data){
+
+                        let mappack = data[2];
+                        let cartMap = new CartMap(question.map, mappack.config);
+
+                        // Add original version
+                        if (mappack.original.hasOwnProperty("bbox")) {
+
+                            const extrema_original = {
+                                min_x: mappack.original.bbox[0],
+                                min_y: mappack.original.bbox[1],
+                                max_x: mappack.original.bbox[2],
+                                max_y: mappack.original.bbox[3]
+                            };
+
+                            cartMap.addVersion("1-conventional", new MapVersionData(mappack.original.features, extrema_original, mappack.original.tooltip, mappack.abbreviations, mappack.labels, MapDataFormat.GEOJSON, false));
+
+                        } else {
+                            cartMap.addVersion("1-conventional", new MapVersionData(mappack.original.features, mappack.original.extrema, mappack.original.tooltip, mappack.abbreviations, null, MapDataFormat.GOCARTJSON, false));
+                        }
+
+                        // Add cartogram version
+                        let cartogramData;
+
+                        if (data[1].hasOwnProperty("bbox")) {
+                            const extrema_cartogram = {
+                            min_x: data[1].bbox[0],
+                            min_y: data[1].bbox[1],
+                            max_x: data[1].bbox[2],
+                            max_y: data[1].bbox[3]
+                            };
+
+                            cartogramData = new MapVersionData(data[1].features, extrema_cartogram, data[0].tooltip, null, null,
+                                MapDataFormat.GEOJSON, false);
+                        } else {
+
+                            cartogramData = new MapVersionData(data[1].features, data[1].extrema, data[0].tooltip, null, null,
+                                MapDataFormat.GOCARTJSON, false);
+
+                        }
+
+                        cartMap.addVersion("3-cartogram", cartogramData);
+
+                        // Add population version
+                        if(mappack.population.hasOwnProperty("bbox")) {
+
+                            const extrema_population = {
+                                min_x: mappack.population.bbox[0],
+                                min_y: mappack.population.bbox[1],
+                                max_x: mappack.population.bbox[2],
+                                max_y: mappack.population.bbox[3]
+                            };
+
+                            cartMap.addVersion("2-population", new MapVersionData(mappack.population.features, extrema_population, mappack.population.tooltip, null, null, MapDataFormat.GEOJSON, false));
+
+                        } else {
+                            cartMap.addVersion("2-population", new MapVersionData(mappack.population.features, mappack.population.extrema, mappack.population.tooltip, null, null, MapDataFormat.GOCARTJSON, false));
+                        }
+
+                        let colors = {};
+
+                        Object.keys(cartMap.regions).forEach(function(region_id){
+
+                            colors[region_id] = mappack.colors["id_" + region_id];
+
+                        }, this);
+
+                        cartMap.colors = colors;
+
+                        cartMap.drawVersion("1-conventional", "map-area", ["map-area", "cartogram-area", "cartogram-area2"]);
+                        cartMap.drawVersion("2-population", "cartogram-area", ["map-area", "cartogram-area", "cartogram-area2"]);
+                        cartMap.drawVersion("3-cartogram", "cartogram-area2", ["map-area", "cartogram-area", "cartogram-area2"]);
+
+                        window.cartogram.exitLoadingState();
+                        document.getElementById('cartogram').style.display = 'block';
+
+                        if (window.cartogram.config.enableSelectable) {
+                            cartMap.drawLegend("1-conventional", "map-area-legend");
+                            cartMap.drawLegend("2-population", "cartogram-area-legend");
+                            cartMap.drawLegend("3-cartogram", "cartogram-area2-legend");
+
+                            cartMap.drawGridLines("1-conventional", "map-area-svg");
+                            cartMap.drawGridLines("2-population", "cartogram-area-svg");
+                            cartMap.drawGridLines("3-cartogram", "cartogram-area2-svg");
+                        }
+
+                        else if (window.cartogram.config.enableGridlines) {
+
+                            cartMap.drawStaticLegend("1-conventional", "map-area-legend");
+                            cartMap.drawStaticLegend("2-population", "cartogram-area-legend");
+                            cartMap.drawStaticLegend("3-cartogram", "cartogram-area2-legend");
+
+                            cartMap.drawGridLines("1-conventional", "map-area-svg");
+                            cartMap.drawGridLines("2-population", "cartogram-area-svg");
+                            cartMap.drawGridLines("3-cartogram", "cartogram-area2-svg");
+                        }
+
+                        else if (window.cartogram.config.enableLegend) {
+                            cartMap.drawStaticLegend("1-conventional", "map-area-legend");
+                            cartMap.drawStaticLegend("2-population", "cartogram-area-legend");
+                            cartMap.drawStaticLegend("3-cartogram", "cartogram-area2-legend");
+                        }
+
+                        else {
+                            cartMap.drawTotalValue("1-conventional", "map-area-legend");
+                            cartMap.drawTotalValue("2-population", "cartogram-area-legend");
+                            cartMap.drawTotalValue("3-cartogram", "cartogram-area2-legend");
+
+                        }
+
+                    }, function(e) {
+                        window.cartogram.doFatalError(e);
+                    })
+                }
+
+                else {
+
+                }
+
+
+
+                document.getElementById('interactivity-message').innerText = this.interactivity_message(
+                    question.hasOwnProperty("interactive") ? question.interactive.deactivate : []);
+            }
+
+            else if(question.type == "cartogram") {
+
+                this.changeLayout(2);
+                this.changeMapTitle(question.mapTitle);
 
                 this.enter_loading_state();
                 window.cartogram.showProgressBar();
@@ -217,12 +359,23 @@ function cartsurvey_init(t_u,d_u,s_u,sui_u,) {
                     let mappack = data[2];
                     let cartMap = new CartMap(question.map, mappack.config);
 
-                    const extrema_original = {
-                        min_x: mappack.original.bbox[0],
-                        min_y: mappack.original.bbox[1],
-                        max_x: mappack.original.bbox[2],
-                        max_y: mappack.original.bbox[3]
-                    };
+                    if (mappack.original.hasOwnProperty("bbox")) {
+
+                        const extrema_original = {
+                            min_x: mappack.original.bbox[0],
+                            min_y: mappack.original.bbox[1],
+                            max_x: mappack.original.bbox[2],
+                            max_y: mappack.original.bbox[3]
+                        };
+
+                        cartMap.addVersion("1-conventional", new MapVersionData(mappack.original.features, extrema_original, mappack.original.tooltip, mappack.abbreviations, mappack.labels, MapDataFormat.GEOJSON, false));
+
+                    }
+                    else {
+                        cartMap.addVersion("1-conventional", new MapVersionData(mappack.original.features, mappack.original.extrema, mappack.original.tooltip, mappack.abbreviations, mappack.labels, MapDataFormat.GEOJSON, false));
+
+                    }
+
                     const extrema_cartogram = {
                                     min_x: data[1].bbox[0],
                                     min_y: data[1].bbox[1],
@@ -233,7 +386,6 @@ function cartsurvey_init(t_u,d_u,s_u,sui_u,) {
                     let cartogramData = new MapVersionData(data[1].features, extrema_cartogram, data[0].tooltip, null, null,
                                                             MapDataFormat.GEOJSON, false);
 
-                    cartMap.addVersion("1-conventional", new MapVersionData(mappack.original.features, extrema_original, mappack.original.tooltip, mappack.abbreviations, mappack.labels, MapDataFormat.GEOJSON, false));
                     cartMap.addVersion("3-cartogram", cartogramData);
 
                     let colors = {};
@@ -249,16 +401,36 @@ function cartsurvey_init(t_u,d_u,s_u,sui_u,) {
                     cartMap.drawVersion("1-conventional", "map-area", ["map-area", "cartogram-area"]);
                     cartMap.drawVersion("3-cartogram", "cartogram-area", ["map-area", "cartogram-area"]);
 
+
                     window.cartogram.exitLoadingState();
                     document.getElementById('cartogram').style.display = 'block';
 
+                    if (window.cartogram.config.enableSelectable) {
+                        cartMap.drawLegend("1-conventional", "map-area-legend");
+                        cartMap.drawLegend("3-cartogram", "cartogram-area-legend");
 
-                    cartMap.drawLegend("1-conventional", "map-area-legend");
-                    cartMap.drawLegend("3-cartogram", "cartogram-area-legend");
-
-                    if (window.cartogram.config.enableGridlines) {
                         cartMap.drawGridLines("1-conventional", "map-area-svg");
                         cartMap.drawGridLines("3-cartogram", "cartogram-area-svg");
+                    }
+
+                    else if (window.cartogram.config.enableGridlines) {
+
+                        cartMap.drawStaticLegend("1-conventional", "map-area-legend");
+                        cartMap.drawStaticLegend("3-cartogram", "cartogram-area-legend");
+
+                        cartMap.drawGridLines("1-conventional", "map-area-svg");
+                        cartMap.drawGridLines("3-cartogram", "cartogram-area-svg");
+                    }
+
+                    else if (window.cartogram.config.enableLegend) {
+                        cartMap.drawStaticLegend("1-conventional", "map-area-legend");
+                        cartMap.drawStaticLegend("3-cartogram", "cartogram-area-legend");
+                    }
+
+                    else {
+                        cartMap.drawTotalValue("1-conventional", "map-area-legend");
+                        cartMap.drawTotalValue("3-cartogram", "cartogram-area-legend");
+
                     }
 
 
@@ -269,114 +441,7 @@ function cartsurvey_init(t_u,d_u,s_u,sui_u,) {
                 document.getElementById('interactivity-message').innerText = this.interactivity_message(
                     question.hasOwnProperty("interactive") ? question.interactive.deactivate : []);
             }
-            else if(question.type == "3switchable")
-            {
-                this.enter_loading_state();
 
-                /*
-                "map":"india-no-tg",
-                "maps": [{"type":"pregen","name":"original"},
-                        {"type":"data","name":"india_pop1961"},
-                        {"type":"pregen","name":"population"}
-                        ],
-                "interactive": {
-                    "deactivate": [
-                        "tooltip",
-                        "highlight"
-                    ]
-                }
-                */
-
-                question.maps.forEach(function(map, index){
-
-                    if(map.type === "pregen")
-                    {
-                        var promise_array = [
-                            window.cartogram.get_pregenerated_map(question.map, map.name),
-                            window.cartogram.get_default_colors(question.map)
-                        ];
-
-                        if(map.name === "original")
-                            promise_array.push(window.cartogram.get_labels(question.map));
-
-                        question.maps[index].promise = Promise.all(promise_array);
-
-                    }
-                    else
-                    {
-                        var promise_array = [
-                            window.cartogram.http_get(window.cartsurvey.data_base_url + "/" + map.name + "_cartogram.json"),
-                            window.cartogram.http_get(window.cartsurvey.data_base_url + "/" + map.name + "_cartogramui.json")
-                        ];
-
-                        question.maps[index].promise = Promise.all(promise_array);
-                    }
-                });
-
-                Promise.all(question.maps.map(map => map.promise)).then(function(mps){
-
-                    mps.forEach(function(mp, index){
-
-                        question.maps[index].map = mp[0];
-
-                        if(question.maps[index].type == "pregen")
-                        {
-                            question.maps[index].colors = mp[1];
-                            question.maps[index].tooltip = mp[0].tooltip;
-
-                            if(question.maps[index].name === "original")
-                                question.maps[index].labels = mp[2];
-                        }
-                        else
-                        {
-                            question.maps[index].colors = mp[1].color_data;
-                            question.maps[index].tooltip = mp[1].tooltip;
-                        }
-
-                    });
-
-                    window.cartogram.get_config(question.map).then(function(map_config){
-
-                        // Pull color data from the second map.
-                        window.cartogram.color_data = question.maps[1].colors;
-                        window.cartogram.map_config = map_config;
-
-                        /* Due to limitations of cartogram.js, we can only display labels
-                           on the first map.
-                        */
-
-                        window.cartogram.draw_three_maps(question.maps[0].map, question.maps[1].map, question.maps[2].map, "map-area", "cartogram-area", question.maps[0].tooltip.label, question.maps[1].tooltip.label, question.maps[2].tooltip.label, question.maps[0].hasOwnProperty("labels") ? question.maps[0].labels : null).then(function(v){
-
-                            window.cartogram.tooltip_clear();
-                            window.cartogram.tooltip_initialize();
-                            window.cartogram.tooltip.push(question.maps[0].tooltip);
-                            window.cartogram.tooltip.push(question.maps[1].tooltip);
-                            window.cartogram.tooltip.push(question.maps[2].tooltip);
-
-                            window.cartogram.exit_loading_state();
-                            document.getElementById('cartogram').style.display = 'block';
-
-                            document.getElementById('interactivity-message').innerText = window.cartsurvey.interactivity_message([
-                                {'name': 'tooltip', 'description': 'infotips'},
-                                {'name': 'highlight', 'description': 'parallel highlighting'},
-                                {'name': 'switching', 'description': 'map switching'}
-                            ], question.hasOwnProperty("interactive") ? question.interactive.deactivate : []);
-
-                        }, function(e){
-                            window.cartogram.do_fatal_error(e);
-                        });
-
-                    }, function(e){
-                        window.cartogram.do_fatal_error(e);
-                    });
-
-
-                }, function(e){
-                    window.cartogram.do_fatal_error(e);
-                });
-
-
-            }
             else
             {
                 window.cartogram.do_fatal_error("Unrecognized question type '" + question.type + "'.");
@@ -385,12 +450,11 @@ function cartsurvey_init(t_u,d_u,s_u,sui_u,) {
             /* Update or hide the next and previous buttons */
             /* This may run before the current question is finished loading, but that's okay */
 
-            if(id == (this.program.questions.length - 1))
-            {
+            if(id == (this.program.questions.length - 1)) {
+
                 document.getElementById('next-button').style.display = 'none';
-            }
-            else
-            {
+
+            } else {
                 document.getElementById('next-button').onclick = (function(i){
 
                     return function(e) {
@@ -405,7 +469,7 @@ function cartsurvey_init(t_u,d_u,s_u,sui_u,) {
 
             if(id == 0)
             {
-                document.getElementById('prev-button').style.display = 'none';
+                document.getElementById('prev-button').style = "display:none";
             }
             else
             {

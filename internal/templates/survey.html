@@ -20,7 +20,7 @@
 
             window.cartogram = new Cartogram("{{cartogram_url}}", "{{cartogramui_url}}", "{{cartogram_data_dir}}", "{{url_for('gridedit')}}","{{getprogress_url}}", "{{cartogram_version}}");
 
-            cartsurvey_init("/3maps", "/static/surveys/data", "/static/surveys", "/survey/");
+            cartsurvey_init("/static/surveys/data", "/static/surveys", "/survey/");
 
             window.cartsurvey.load_survey("{{survey_name}}").then(function(){
 

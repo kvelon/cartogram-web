@@ -96,15 +96,12 @@
          <div class="col-md-6">
            <div class="row">
              <div class="col-5">
-             <input id='prev-button' type="button" class="btn btn-primary mb-2 d-block w-100" value="Previous Question" onclick="clearFileInput(document.getElementById('csv'));document.getElementById('csv').click();" id="upload-button"/>
-{#                <select class="form-control border-primary bg-primary text-light" id="handler">#}
-{#                    {% for handler in cartogram_handlers %}#}
-{#                    <option value="{{handler.id}}" {% if handler.id == default_cartogram_handler %}selected{% endif %} >{{handler.display_name}}</option>#}
-{#                    {% endfor %}#}
-{#                  </select>#}
+             <input id='prev-button' type="button" class="btn btn-primary mb-2" value="Previous Question" />
+
              </div>
              <div class="col-4">
-                <input id='next-button' type="button" class="btn btn-primary mb-2 d-block w-100" value="Next Question" onclick="clearFileInput(document.getElementById('csv'));document.getElementById('csv').click();" id="upload-button"/>
+                 <input id='next-button' type="button" class="btn btn-primary mb-2" value="Next Question" />
+
              </div>
            </div>
            <p id="non-fatal-error" class="text-danger font-weight-bold"></p>
@@ -166,10 +163,10 @@
       <div id="cartogram">
         <div class="row" id="cartogram-row">
 
-          <div class="col-md-6" >
+          <div class="col-md-4" id="map-container">
 
               <div style="height: 40px">
-                  <h4 class="mb-0">Conventional Map</h4>
+                  <h4 class="mb-0" id="map-title">Conventional Map</h4>
                   <p id="tooltip">&nbsp;</p>
                 </div>
 
@@ -182,11 +179,11 @@
 
           </div>
 
-          <div class="col-md-6" id="cartogram-container">
+          <div class="col-md-4" id="cartogram-container">
 
               <div style="height: 40px">
                   <div class="d-flex align-items-center">
-                      <h4 class="d-inline-block mb-0">Cartogram</h4>
+                      <h4 class="d-inline-block mb-0" id="cartogram-title">Cartogram</h4>
                       <div id="map2-switch" class="ml-2">
                           <div  id="map2-switch-buttons" style="display:none"></div>
                         </div>
@@ -196,12 +193,22 @@
                 </div>
 
                 <div id = "cartogram-area" style="margin-top: 20px"></div>
-
-{#                <div class="col-12">#}
-                  <svg width="500" height="120" id="cartogram-area-legend"></svg>
-{#                </div>#}
+                <svg width="500" height="120" id="cartogram-area-legend"></svg>
           </div>
 
+            <div class="col-md-4" id="cartogram-container2">
+
+              <div style="height: 40px">
+                  <div class="d-flex align-items-center">
+                      <h4 class="d-inline-block mb-0" id="cartogram-title2">Cartogram Two</h4>
+
+                  </div>
+
+                </div>
+
+                <div id = "cartogram-area2" style="margin-top: 20px"></div>
+                <svg width="500" height="120" id="cartogram-area2-legend"></svg>
+          </div>
 
       </div>
 
