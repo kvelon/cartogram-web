@@ -34,28 +34,643 @@
       "mapTitle": ["New Zealand", "Population (1991)", "Population (2018)"],
       "data": "new_zealand_population_1991",
       "colors": {
-        "id_1": "#7570b3",
-        "id_2": "#7570b3",
-        "id_3": "#e6ab02",
-        "id_4": "#7570b3",
-        "id_5": "#7570b3",
-        "id_6": "#7570b3",
-        "id_7": "#e6ab02",
-        "id_8": "#e6ab02",
-        "id_9": "#7570b3",
-        "id_10": "#e6ab02",
-        "id_11": "#e6ab02",
-        "id_12": "#7570b3",
-        "id_13": "#e6ab02",
-        "id_14": "#7570b3",
-        "id_15": "#7570b3",
-        "id_16": "#e6ab02"
+        "1": "#7570b3",
+        "2": "#7570b3",
+        "3": "#e6ab02",
+        "4": "#7570b3",
+        "5": "#7570b3",
+        "6": "#7570b3",
+        "7": "#e6ab02",
+        "8": "#e6ab02",
+        "9": "#7570b3",
+        "10": "#e6ab02",
+        "11": "#e6ab02",
+        "12": "#7570b3",
+        "13": "#e6ab02",
+        "14": "#7570b3",
+        "15": "#7570b3",
+        "16": "#e6ab02"
       },
       "interactive": {
         "deactivate": [
           "gridlines",
           "selectable"
         ]
+      }
+    },
+    {
+      "map": "germany",
+      "type": "3maps",
+      "mapTitle": ["Germany", "Population (1990)", "Population (2018)"],
+      "data": "germany_population_1990",
+      "colors": {
+        "1": "#e6ab02",
+        "2": "#e6ab02",
+        "3": "#e6ab02",
+        "4": "#e6ab02",
+        "5": "#e6ab02",
+        "6": "#e6ab02",
+        "7": "#e6ab02",
+        "8": "#7570b3",
+        "9": "#e6ab02",
+        "10": "#7570b3",
+        "11": "#7570b3",
+        "12": "#7570b3",
+        "13": "#7570b3",
+        "14": "#7570b3",
+        "15": "#7570b3",
+        "16": "#e6ab02"
+      },
+      "interactive": {
+        "deactivate": [
+          "legend",
+          "gridlines",
+          "selectable"
+        ]
+      }
+    },
+    {
+      "map": "denmark",
+      "type": "population",
+      "mapTitle": ["Denmark", "Population"],
+      "interactive": {
+        "deactivate": [
+          "legend",
+          "gridlines",
+          "selectable"
+        ]
+      }
+    },
+    {
+      "map": "czechrepublic3",
+      "type": "cartogram",
+      "data": "czech_gdp",
+      "mapTitle": ["Czech Republic", "GDP"],
+      "interactive": {
+        "deactivate": [
+          "gridlines",
+          "selectable"
+        ]
+      }
+    },
+    {
+      "map": "srilanka",
+      "type": "population",
+      "mapTitle": ["Sri Lanka", "Population"]
+    },
+    {
+      "map": "brazil",
+      "type": "population",
+      "mapTitle": ["Brazil", "Population"],
+      "colors": {
+        "1": "#7570b3",
+        "2": "#7570b3",
+        "3": "#7570b3",
+        "4": "#7570b3",
+        "5": "#7570b3",
+        "6": "#7570b3",
+        "7": "#7570b3",
+        "8": "#e6ab02",
+        "9": "#7570b3",
+        "10": "#7570b3",
+        "11": "#7570b3",
+        "12": "#7570b3",
+        "13": "#7570b3",
+        "14": "#7570b3",
+        "15": "#7570b3",
+        "16": "#e6ab02",
+        "17": "#7570b3",
+        "18": "#7570b3",
+        "19": "#e6ab02",
+        "20": "#7570b3",
+        "21": "#e6ab02",
+        "22": "#7570b3",
+        "23": "#7570b3",
+        "24": "#e6ab02",
+        "25": "#e6ab02",
+        "26": "#7570b3",
+        "27": "#7570b3"
+      },
+      "interactive": {
+        "deactivate": [
+          "selectable"
+        ]
+      }
+    },
+    {
+      "map": "malaysia",
+      "type": "population",
+      "mapTitle": ["Malaysia", "Population"],
+      "colors": {
+        "1": "#7570b3",
+        "2": "#e6ab02",
+        "3": "#e6ab02",
+        "4": "#e6ab02",
+        "5": "#7570b3",
+        "6": "#7570b3",
+        "7": "#e6ab02",
+        "8": "#e6ab02",
+        "9": "#e6ab02",
+        "10": "#e6ab02",
+        "11": "#e6ab02",
+        "12": "#e6ab02",
+        "13": "#7570b3",
+        "14": "#7570b3",
+        "15": "#e6ab02",
+        "16": "#e6ab02"
+      }
+    },
+    {
+      "map": "germany",
+      "type": "cartogram",
+      "data": "germany_covid",
+      "mapTitle": ["Germany", "COVID-19 Cases"],
+      "colors": {
+        "1": "#7570b3",
+        "2": "#7570b3",
+        "3": "#7570b3",
+        "4": "#e6ab02",
+        "5": "#e6ab02",
+        "6": "#e6ab02",
+        "7": "#e6ab02",
+        "8": "#7570b3",
+        "9": "#e6ab02",
+        "10": "#7570b3",
+        "11": "#7570b3",
+        "12": "#7570b3",
+        "13": "#7570b3",
+        "14": "#7570b3",
+        "15": "#7570b3",
+        "16": "#7570b3"
+      }
+    },
+    {
+      "map": "laos",
+      "type": "3maps",
+      "mapTitle": ["Laos", "Population (1985)", "Population (2018)"],
+      "data": "laos_population_1985",
+      "colors": {
+        "1": "#7570b3",
+        "2": "#e6ab02",
+        "3": "#e6ab02",
+        "4": "#7570b3",
+        "5": "#e6ab02",
+        "6": "#7570b3",
+        "7": "#e6ab02",
+        "8": "#e6ab02",
+        "9": "#e6ab02",
+        "10": "#e6ab02",
+        "11": "#7570b3",
+        "12": "#7570b3",
+        "13": "#e6ab02",
+        "14": "#e6ab02",
+        "15": "#e6ab02",
+        "16": "#e6ab02",
+        "17": "#7570b3",
+        "18": "#e6ab02"
+      },
+      "interactive": {
+        "deactivate": [
+          "selectable"
+        ]
+      }
+    },
+    {
+      "map": "czechrepublic3",
+      "type": "population",
+      "mapTitle": ["Czech Republic", "Population"],
+      "interactive": {
+        "deactivate": [
+          "selectable"
+        ]
+      }
+    },
+    {
+      "map": "ukraine",
+      "type": "population",
+      "mapTitle": ["Ukraine", "Population"],
+      "colors": {
+        "1": "#e6ab02",
+        "2": "#e6ab02",
+        "3": "#e6ab02",
+        "4": "#7570b3",
+        "5": "#7570b3",
+        "6": "#7570b3",
+        "7": "#e6ab02",
+        "8": "#7570b3",
+        "9": "#7570b3",
+        "10": "#e6ab02",
+        "11": "#e6ab02",
+        "12": "#e6ab02",
+        "13": "#7570b3",
+        "14": "#e6ab02",
+        "15": "#7570b3",
+        "16": "#7570b3",
+        "17": "#e6ab02",
+        "18": "#7570b3",
+        "19": "#e6ab02",
+        "20": "#7570b3",
+        "21": "#7570b3",
+        "22": "#e6ab02",
+        "23": "#e6ab02",
+        "24": "#e6ab02",
+        "25": "#e6ab02",
+        "26": "#7570b3",
+        "27": "#e6ab02"
+      },
+      "interactive": {
+        "deactivate": [
+          "legend",
+          "gridlines",
+          "selectable"
+        ]
+      }
+    },
+    {
+      "map": "poland",
+      "type": "population",
+      "mapTitle": ["Poland", "Population"],
+      "interactive": {
+        "deactivate": [
+          "selectable"
+        ]
+      }
+    },
+    {
+      "map": "kaz",
+      "type": "population",
+      "mapTitle": ["Kazakhstan", "Population"],
+      "interactive": {
+        "deactivate": [
+          "gridlines",
+          "selectable"
+        ]
+      }
+    },
+    {
+      "map": "southAfrica",
+      "type": "population",
+      "mapTitle": ["South Africa", "Population"],
+      "colors": {
+            "1": "#e6ab02",
+            "2": "#e6ab02",
+            "3": "#7570b3",
+            "4": "#7570b3",
+            "5": "#7570b3",
+            "6": "#7570b3",
+            "7": "#e6ab02",
+            "8": "#e6ab02",
+            "9": "#e6ab02"
+      },
+      "interactive": {
+        "deactivate": [
+          "legend",
+          "gridlines",
+          "selectable"
+        ]
+      }
+    },
+    {
+      "map": "usa",
+      "type": "population",
+      "mapTitle": ["United States", "Population"],
+      "interactive": {
+        "deactivate": [
+          "selectable"
+        ]
+      }
+    },
+    {
+      "map": "australia",
+      "type": "3maps",
+      "mapTitle": ["Australia","Population (2001)", "Population (2018)"],
+      "data": "australia_population_2001"
+    },
+    {
+      "map": "qatar",
+      "type": "3maps",
+      "mapTitle": ["Qatar","Population (1986)", "Population (2018)"],
+      "data": "qatar_population_1986"
+    },
+    {
+      "map": "nepal",
+      "type": "3maps",
+      "mapTitle": ["Nepal","Wheat yield (2017)", "Wheat yield (2019)"],
+      "data": ["nepal_wheat_2017","nepal_wheat_2019"],
+      "colors": {
+        "1": "#7570b3",
+        "2": "#e6ab02",
+        "3": "#e6ab02",
+        "4": "#7570b3",
+        "5": "#7570b3",
+        "6": "#e6ab02",
+        "7": "#e6ab02"
+      },
+      "interactive": {
+        "deactivate": [
+          "legend",
+          "gridlines",
+          "selectable"
+        ]
+      }
+    },
+    {
+      "map": "netherlands",
+      "type": "population",
+      "mapTitle": ["Netherlands", "Population"],
+      "interactive": {
+        "deactivate": [
+          "selectable"
+        ]
+      }
+    },
+    {
+      "map": "belgium",
+      "type": "population",
+      "mapTitle": ["Belgium", "Population"],
+      "colors": {
+        "1": "#e6ab02",
+        "2": "#e6ab02",
+        "3": "#7570b3"
+      },
+      "interactive": {
+        "deactivate": [
+          "selectable"
+        ]
+      }
+    },
+    {
+      "map": "hungary",
+      "type": "population",
+      "mapTitle": ["Hungary", "Population"],
+      "interactive": {
+        "deactivate": [
+          "legend",
+          "gridlines",
+          "selectable"
+        ]
+      }
+    },
+    {
+      "map": "france",
+      "type": "population",
+      "mapTitle": ["France", "Population"],
+      "interactive": {
+        "deactivate": [
+          "gridlines",
+          "selectable"
+        ]
+      }
+    },
+    {
+      "map": "jamaica",
+      "type": "3maps",
+      "mapTitle": ["Jamaica","Population (2001)", "Population (2018)"],
+      "data": "jamaica_population_2001",
+      "colors": {
+        "1": "#e6ab02",
+        "2": "#e6ab02",
+        "3": "#7570b3",
+        "4": "#e6ab02",
+        "5": "#7570b3",
+        "6": "#7570b3",
+        "7": "#7570b3",
+        "8": "#7570b3",
+        "9": "#e6ab02",
+        "10": "#e6ab02",
+        "11": "#7570b3",
+        "12": "#7570b3",
+        "13": "#e6ab02",
+        "14": "#e6ab02"
+      },
+      "interactive": {
+        "deactivate": [
+          "gridlines",
+          "selectable"
+        ]
+      }
+    },
+    {
+      "map": "ireland",
+      "type": "population",
+      "mapTitle": ["Ireland", "Population"]
+    },
+    {
+      "map": "italy2",
+      "type": "population",
+      "mapTitle": ["Italy", "Population"],
+      "colors": {
+        "1": "#7570b3",
+        "2": "#7570b3",
+        "3": "#7570b3",
+        "4": "#7570b3",
+        "5": "#7570b3",
+        "6": "#e6ab02",
+        "7": "#e6ab02",
+        "8": "#7570b3",
+        "9": "#e6ab02",
+        "10": "#e6ab02",
+        "11": "#e6ab02",
+        "12": "#7570b3",
+        "13": "#e6ab02",
+        "14": "#7570b3",
+        "15": "#7570b3",
+        "16": "#e6ab02",
+        "17": "#e6ab02",
+        "18": "#e6ab02",
+        "19": "#e6ab02",
+        "20": "#e6ab02"
+      },
+      "interactive": {
+        "deactivate": [
+          "selectable"
+        ]
+      }
+    },
+    {
+      "map": "cambodia",
+      "type": "3maps",
+      "data": "cambodia_population_1998",
+      "mapTitle": ["Cambodia", "Population (1998)", "Population (2018)"],
+      "interactive": {
+        "deactivate": [
+          "legend",
+          "gridlines",
+          "selectable"
+        ]
+      }
+    },
+    {
+      "map": "luxembourg",
+      "type": "population",
+      "mapTitle": ["Luxembourg", "Population"],
+      "colors": {
+        "1": "#7570b3",
+        "2": "#e6ab02",
+        "3": "#e6ab02",
+        "4": "#e6ab02",
+        "5": "#7570b3",
+        "6": "#e6ab02",
+        "7": "#7570b3",
+        "8": "#e6ab02",
+        "9": "#e6ab02",
+        "10": "#7570b3",
+        "11": "#e6ab02",
+        "12": "#e6ab02"
+      },
+      "interactive": {
+        "deactivate": [
+          "selectable"
+        ]
+      }
+    },
+    {
+      "map": "israel3",
+      "type": "3maps",
+      "mapTitle": ["Israel","Population (1983)", "Population (2018)"],
+      "data": "israel_population_1983",
+      "colors": {
+        "1": "#7570b3",
+        "2": "#e6ab02",
+        "3": "#e6ab02",
+        "4": "#e6ab02",
+        "5": "#7570b3",
+        "6": "#e6ab02"
+      },
+      "interactive": {
+        "deactivate": [
+          "selectable"
+        ]
+      }
+    },
+    {
+      "map": "argentina",
+      "type": "population",
+      "mapTitle": ["Argentina", "Population"]
+    },
+    {
+      "map": "newZealand",
+      "type": "population",
+      "mapTitle": ["New Zealand", "Population"],
+      "interactive": {
+        "deactivate": [
+          "gridlines",
+          "selectable"
+        ]
+      }
+    },
+    {
+      "map": "austria",
+      "type": "population",
+      "mapTitle": ["Austria", "Population"],
+      "colors": {
+        "1": "#7570b3",
+        "2": "#e6ab02",
+        "3": "#7570b3",
+        "4": "#7570b3",
+        "5": "#e6ab02",
+        "6": "#e6ab02",
+        "7": "#e6ab02",
+        "8": "#e6ab02",
+        "9": "#7570b3"
+      }
+    },
+    {
+      "map": "southKorea2",
+      "type": "population",
+      "mapTitle": ["South Korea", "Population"],
+      "interactive": {
+        "deactivate": [
+          "gridlines",
+          "selectable"
+        ]
+      }
+    },
+    {
+      "map": "brazil",
+      "type": "cartogram",
+      "data": "brazil_gdp",
+      "mapTitle": ["Brazil", "GDP"],
+      "interactive": {
+        "deactivate": [
+          "legend",
+          "gridlines",
+          "selectable"
+        ]
+      }
+    },
+    {
+      "map": "netherlands",
+      "type": "cartogram",
+      "data": "netherlands_gdp",
+      "mapTitle": ["Netherlands", "GDP"],
+      "colors": {
+        "1": "#7570b3",
+        "2": "#7570b3",
+        "3": "#7570b3",
+        "4": "#7570b3",
+        "5": "#7570b3",
+        "6": "#e6ab02",
+        "7": "#e6ab02",
+        "8": "#7570b3",
+        "9": "#7570b3",
+        "10": "#7570b3",
+        "11": "#e6ab02",
+        "12": "#e6ab02"
+      },
+      "interactive": {
+        "deactivate": [
+          "legend",
+          "gridlines",
+          "selectable"
+        ]
+      }
+    },
+    {
+      "map": "andorra",
+      "type": "3maps",
+      "mapTitle": ["Andorra","Population (1963)", "Population (2018)"],
+      "data": "andorra_population_1963",
+      "interactive": {
+        "deactivate": [
+          "gridlines",
+          "selectable"
+        ]
+      }
+    },
+    {
+      "map": "nigeria",
+      "type": "population",
+      "mapTitle": ["Nigeria", "Population"],
+      "interactive": {
+        "deactivate": [
+          "legend",
+          "gridlines",
+          "selectable"
+        ]
+      }
+    },
+    {
+      "map": "myanmar",
+      "type": "3maps",
+      "mapTitle": ["Myanmar","Population (1983)", "Population (2018)"],
+      "data": "myanmar_population_1983",
+      "colors": {
+        "1": "#7570b3",
+        "2": "#7570b3",
+        "3": "#e6ab02",
+        "4": "#e6ab02",
+        "5": "#7570b3",
+        "6": "#7570b3",
+        "7": "#e6ab02",
+        "8": "#e6ab02",
+        "9": "#7570b3",
+        "10": "#e6ab02",
+        "11": "#e6ab02",
+        "12": "#e6ab02",
+        "13": "#e6ab02",
+        "14": "#7570b3",
+        "15": "#7570b3"
       }
     }
   ]

@@ -1870,7 +1870,7 @@ class CartMap {
                 var textLabels = text.attr('x', d => d.x * scale_x)
                     .attr('y', d => d.y * scale_y)
                     .attr('font-family', 'sans-serif')
-                    .attr('font-size', '7.5px')
+                    .attr('font-size', '10px')
                     .attr('fill', '#000')
                     .text(d => d.text)
 
@@ -3357,15 +3357,22 @@ class Cartogram {
             information from colors.json to produce a color map where the IDs are plain region IDs, as required by
             CartMap.
             */
-            var colors = {};
+            let mapColours = {};
 
-            Object.keys(map.regions).forEach(function(region_id){
+            if (colors !== null) {
 
-                colors[region_id] = mappack.colors["id_" + region_id];
+                Object.keys(map.regions).forEach(function(region_id){
+                    mapColours[region_id] = colors[region_id.toString()];
+                }, this);
 
-            }, this);
+            } else {
 
-            map.colors = colors;
+                Object.keys(map.regions).forEach(function(region_id){
+                    mapColours[region_id] = mappack.colors["id_" + region_id];
+                }, this);
+            }
+
+            map.colors = mapColours;
 
             map.drawVersion("1-conventional", "map-area", ["map-area", "cartogram-area"]);
 

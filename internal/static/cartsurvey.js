@@ -195,7 +195,7 @@ function cartsurvey_init(d_u,s_u,sui_u) {
                 this.changeMapTitle(question.mapTitle);
 
                 if(question.hasOwnProperty('colors'))
-                    window.cartogram.switchMap(question.map, question.map, null, this.http_get(this.data_base_url + "/" + question.colors + ".json"));
+                    window.cartogram.switchMap(question.map, question.map, null, question.colors);
                 else
                     window.cartogram.switchMap(question.map, question.map);
 
@@ -280,7 +280,7 @@ function cartsurvey_init(d_u,s_u,sui_u) {
 
                             if (question.hasOwnProperty("colors")) {
 
-                                colors[region_id] = question.colors["id_" + region_id];
+                                colors[region_id] = question.colors[region_id.toString()];
 
                             } else {
 
@@ -339,10 +339,136 @@ function cartsurvey_init(d_u,s_u,sui_u) {
                 }
 
                 else {
+                    Promise.all([this.http_get(this.data_base_url + "/" + question.data[0] + "_cartogramui.json"),
+                        this.http_get(this.data_base_url + "/" + question.data[0] + "_cartogram.json"),
+                        window.cartogram.getMapPack(question.map),
+                        this.http_get(this.data_base_url + "/" + question.data[1] + "_cartogramui.json"),
+                        this.http_get(this.data_base_url + "/" + question.data[1] + "_cartogram.json")]).then(function(data){
 
+                        let mappack = data[2];
+                        let cartMap = new CartMap(question.map, mappack.config);
+
+                        // Add original version
+                        if (mappack.original.hasOwnProperty("bbox")) {
+
+                            const extrema_original = {
+                                min_x: mappack.original.bbox[0],
+                                min_y: mappack.original.bbox[1],
+                                max_x: mappack.original.bbox[2],
+                                max_y: mappack.original.bbox[3]
+                            };
+
+                            cartMap.addVersion("1-conventional", new MapVersionData(mappack.original.features, extrema_original, mappack.original.tooltip, mappack.abbreviations, mappack.labels, MapDataFormat.GEOJSON, false));
+
+                        } else {
+                            cartMap.addVersion("1-conventional", new MapVersionData(mappack.original.features, mappack.original.extrema, mappack.original.tooltip, mappack.abbreviations, null, MapDataFormat.GOCARTJSON, false));
+                        }
+
+                        // Add first cartogram version
+                        let cartogramData;
+
+                        if (data[1].hasOwnProperty("bbox")) {
+                            const extrema_cartogram = {
+                            min_x: data[1].bbox[0],
+                            min_y: data[1].bbox[1],
+                            max_x: data[1].bbox[2],
+                            max_y: data[1].bbox[3]
+                            };
+
+                            cartogramData = new MapVersionData(data[1].features, extrema_cartogram, data[0].tooltip, null, null,
+                                MapDataFormat.GEOJSON, false);
+                        } else {
+
+                            cartogramData = new MapVersionData(data[1].features, data[1].extrema, data[0].tooltip, null, null,
+                                MapDataFormat.GOCARTJSON, false);
+                        }
+
+                        cartMap.addVersion("3-cartogram", cartogramData);
+
+                        // Add second cartogram version
+                        let cartogramData2;
+
+                        if (data[4].hasOwnProperty("bbox")) {
+                            const extrema_cartogram2 = {
+                            min_x: data[4].bbox[0],
+                            min_y: data[4].bbox[1],
+                            max_x: data[4].bbox[2],
+                            max_y: data[4].bbox[3]
+                            };
+
+                            cartogramData2 = new MapVersionData(data[4].features, extrema_cartogram2, data[3].tooltip, null, null,
+                                MapDataFormat.GEOJSON, false);
+                        } else {
+
+                            cartogramData2 = new MapVersionData(data[4].features, data[3].extrema, data[3].tooltip, null, null,
+                                MapDataFormat.GOCARTJSON, false);
+                        }
+
+                        cartMap.addVersion("4-cartogram2", cartogramData2);
+
+                        let colors = {};
+
+                        Object.keys(cartMap.regions).forEach(function(region_id){
+
+                            if (question.hasOwnProperty("colors")) {
+
+                                colors[region_id] = question.colors[region_id.toString()];
+
+                            } else {
+
+                                colors[region_id] = mappack.colors["id_" + region_id];
+
+                            }
+
+                        }, this);
+
+                        cartMap.colors = colors;
+
+                        cartMap.drawVersion("1-conventional", "map-area", ["map-area", "cartogram-area", "cartogram-area2"]);
+                        cartMap.drawVersion("3-cartogram", "cartogram-area", ["map-area", "cartogram-area", "cartogram-area2"]);
+                        cartMap.drawVersion("4-cartogram2", "cartogram-area2", ["map-area", "cartogram-area", "cartogram-area2"]);
+
+                        window.cartogram.exitLoadingState();
+                        document.getElementById('cartogram').style.display = 'block';
+
+                        if (window.cartogram.config.enableSelectable) {
+                            cartMap.drawLegend("1-conventional", "map-area-legend");
+                            cartMap.drawLegend("3-cartogram", "cartogram-area-legend");
+                            cartMap.drawLegend("4-cartogram2", "cartogram-area2-legend");
+
+                            cartMap.drawGridLines("1-conventional", "map-area-svg");
+                            cartMap.drawGridLines("3-cartogram", "cartogram-area-svg");
+                            cartMap.drawGridLines("4-cartogram2", "cartogram-area2-svg");
+                        }
+
+                        else if (window.cartogram.config.enableGridlines) {
+
+                            cartMap.drawStaticLegend("1-conventional", "map-area-legend");
+                            cartMap.drawStaticLegend("3-cartogram", "cartogram-area-legend");
+                            cartMap.drawStaticLegend("4-cartogram2", "cartogram-area2-legend");
+
+                            cartMap.drawGridLines("1-conventional", "map-area-svg");
+                            cartMap.drawGridLines("3-cartogram", "cartogram-area-svg");
+                            cartMap.drawGridLines("4-cartogram2", "cartogram-area2-svg");
+                        }
+
+                        else if (window.cartogram.config.enableLegend) {
+                            cartMap.drawStaticLegend("1-conventional", "map-area-legend");
+                            cartMap.drawStaticLegend("3-cartogram", "cartogram-area-legend");
+                            cartMap.drawStaticLegend("4-cartogram2", "cartogram-area2-legend");
+                        }
+
+                        else {
+                            cartMap.drawTotalValue("1-conventional", "map-area-legend");
+                            cartMap.drawTotalValue("3-cartogram", "cartogram-area-legend");
+                            cartMap.drawTotalValue("4-cartogram2", "cartogram-area2-legend");
+
+                        }
+
+                    }, function(e) {
+                        window.cartogram.doFatalError(e);
+                    })
                 }
-
-
 
                 document.getElementById('interactivity-message').innerText = this.interactivity_message(
                     question.hasOwnProperty("interactive") ? question.interactive.deactivate : []);
@@ -380,7 +506,7 @@ function cartsurvey_init(d_u,s_u,sui_u) {
 
                     }
                     else {
-                        cartMap.addVersion("1-conventional", new MapVersionData(mappack.original.features, mappack.original.extrema, mappack.original.tooltip, mappack.abbreviations, mappack.labels, MapDataFormat.GEOJSON, false));
+                        cartMap.addVersion("1-conventional", new MapVersionData(mappack.original.features, mappack.original.extrema, mappack.original.tooltip, mappack.abbreviations, mappack.labels, MapDataFormat.GOCARTJSON, false));
 
                     }
 
@@ -413,7 +539,7 @@ function cartsurvey_init(d_u,s_u,sui_u) {
 
                         if (question.hasOwnProperty("colors")) {
 
-                            colors[region_id] = question.colors["id_" + region_id];
+                            colors[region_id] = question.colors[region_id.toString()];
 
                         } else {
 
@@ -469,8 +595,7 @@ function cartsurvey_init(d_u,s_u,sui_u) {
                     question.hasOwnProperty("interactive") ? question.interactive.deactivate : []);
             }
 
-            else
-            {
+            else {
                 window.cartogram.do_fatal_error("Unrecognized question type '" + question.type + "'.");
             }
 
