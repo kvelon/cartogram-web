@@ -169,15 +169,14 @@ function cartsurvey_init(d_u,s_u,sui_u) {
 
             var question = this.program.questions[id];
 
-            if(question.hasOwnProperty("interactive"))
-            {
+            if(question.hasOwnProperty("interactive")) {
+
                 window.cartogram.config.enableLegend = !(question.interactive.deactivate.includes("legend"));
                 window.cartogram.config.enableGridlines = !(question.interactive.deactivate.includes("gridlines"));
                 window.cartogram.config.enableSelectable = !(question.interactive.deactivate.includes("selectable"));
 
             }
-            else
-            {
+            else {
                 /* We assume full interactivity */
                 window.cartogram.config.enableLegend = true;
                 window.cartogram.config.enableGridlines = true;
@@ -185,11 +184,7 @@ function cartsurvey_init(d_u,s_u,sui_u) {
 
             }
 
-            if(question.type == "url") {
-                window.location = question.url;
-            }
-
-            else if(question.type == "population") {
+             if(question.type == "population") {
 
                 this.changeLayout(2);
                 this.changeMapTitle(question.mapTitle);
@@ -234,7 +229,7 @@ function cartsurvey_init(d_u,s_u,sui_u) {
                             cartMap.addVersion("1-conventional", new MapVersionData(mappack.original.features, extrema_original, mappack.original.tooltip, mappack.abbreviations, mappack.labels, MapDataFormat.GEOJSON, false));
 
                         } else {
-                            cartMap.addVersion("1-conventional", new MapVersionData(mappack.original.features, mappack.original.extrema, mappack.original.tooltip, mappack.abbreviations, null, MapDataFormat.GOCARTJSON, false));
+                            cartMap.addVersion("1-conventional", new MapVersionData(mappack.original.features, mappack.original.extrema, mappack.original.tooltip, mappack.abbreviations, mappack.labels, MapDataFormat.GOCARTJSON, false));
                         }
 
                         // Add cartogram version
@@ -361,7 +356,7 @@ function cartsurvey_init(d_u,s_u,sui_u) {
                             cartMap.addVersion("1-conventional", new MapVersionData(mappack.original.features, extrema_original, mappack.original.tooltip, mappack.abbreviations, mappack.labels, MapDataFormat.GEOJSON, false));
 
                         } else {
-                            cartMap.addVersion("1-conventional", new MapVersionData(mappack.original.features, mappack.original.extrema, mappack.original.tooltip, mappack.abbreviations, null, MapDataFormat.GOCARTJSON, false));
+                            cartMap.addVersion("1-conventional", new MapVersionData(mappack.original.features, mappack.original.extrema, mappack.original.tooltip, mappack.abbreviations, mappack.labels, MapDataFormat.GOCARTJSON, false));
                         }
 
                         // Add first cartogram version
@@ -639,11 +634,11 @@ function cartsurvey_init(d_u,s_u,sui_u) {
 
             if(question.hasOwnProperty("question_title"))
             {
-                document.getElementById('question-display').innerHTML = question.question_title;
+                document.getElementById('question-no').innerHTML = question.question_title;
             }
             else
             {
-                document.getElementById('question-no').innerText = id + 1;
+                document.getElementById('question-no').innerText = "Question " + id ;
             }
 
 

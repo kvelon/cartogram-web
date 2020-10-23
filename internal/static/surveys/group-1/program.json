@@ -1,6 +1,12 @@
 {
   "questions": [
     {
+      "map": "singapore",
+      "question_title": "Sample Question",
+      "type": "population",
+      "mapTitle": ["Singapore","Population"]
+    },
+    {
       "map": "nepal",
       "type": "cartogram",
       "mapTitle": ["Nepal","Cattle (2018)"],
@@ -13,9 +19,9 @@
       }
     },
     {
-      "map": "israel3",
+      "map": "saudiArabia",
       "type": "population",
-      "mapTitle": ["Israel","Population (2018)"]
+      "mapTitle": ["Saudi Arabia","Population"]
     },
     {
       "map": "india",
@@ -106,6 +112,22 @@
       "type": "cartogram",
       "data": "czech_gdp",
       "mapTitle": ["Czech Republic", "GDP"],
+      "colors": {
+        "1": "#e6ab02",
+        "2": "#7570b3",
+        "3": "#7570b3",
+        "4": "#7570b3",
+        "5": "#e6ab02",
+        "6": "#7570b3",
+        "7": "#e6ab02",
+        "8": "#e6ab02",
+        "9": "#e6ab02",
+        "10": "#7570b3",
+        "11": "#7570b3",
+        "12": "#7570b3",
+        "13": "#e6ab02",
+        "14": "#7570b3"
+      },
       "interactive": {
         "deactivate": [
           "gridlines",
@@ -344,7 +366,17 @@
       "map": "australia",
       "type": "3maps",
       "mapTitle": ["Australia","Population (2001)", "Population (2018)"],
-      "data": "australia_population_2001"
+      "data": "australia_population_2001",
+      "colors": {
+        "1": "#e6ab02",
+        "2": "#e6ab02",
+        "3": "#7570b3",
+        "4": "#7570b3",
+        "5": "#7570b3",
+        "6": "#e6ab02",
+        "7": "#e6ab02",
+        "8": "#7570b3"
+      }
     },
     {
       "map": "qatar",
@@ -549,9 +581,29 @@
       "mapTitle": ["Argentina", "Population"]
     },
     {
-      "map": "newZealand",
+      "map": "spain4",
       "type": "population",
-      "mapTitle": ["New Zealand", "Population"],
+      "mapTitle": ["Spain", "Population"],
+      "colors": {
+        "1": "#e6ab02",
+        "2": "#7570b3",
+        "3": "#7570b3",
+        "4": "#7570b3",
+        "5": "#7570b3",
+        "6": "#7570b3",
+        "7": "#e6ab02",
+        "8": "#7570b3",
+        "9": "#7570b3",
+        "10": "#e6ab02",
+        "11": "#e6ab02",
+        "12": "#7570b3",
+        "13": "#e6ab02",
+        "14": "#7570b3",
+        "15": "#e6ab02",
+        "16": "#7570b3",
+        "17": "#7570b3",
+        "18": "#e6ab02"
+      },
       "interactive": {
         "deactivate": [
           "gridlines",
