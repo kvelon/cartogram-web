@@ -288,43 +288,43 @@ function cartsurvey_init(d_u,s_u,sui_u) {
                         cartMap.colors = colors;
 
                         cartMap.drawVersion("1-conventional", "map-area", ["map-area", "cartogram-area", "cartogram-area2"]);
-                        cartMap.drawVersion("2-population", "cartogram-area", ["map-area", "cartogram-area", "cartogram-area2"]);
-                        cartMap.drawVersion("3-cartogram", "cartogram-area2", ["map-area", "cartogram-area", "cartogram-area2"]);
+                        cartMap.drawVersion("2-population", "cartogram-area2", ["map-area", "cartogram-area", "cartogram-area2"]);
+                        cartMap.drawVersion("3-cartogram", "cartogram-area", ["map-area", "cartogram-area", "cartogram-area2"]);
 
                         window.cartogram.exitLoadingState();
                         document.getElementById('cartogram').style.display = 'block';
 
                         if (window.cartogram.config.enableSelectable) {
                             cartMap.drawLegend("1-conventional", "map-area-legend");
-                            cartMap.drawLegend("2-population", "cartogram-area-legend");
-                            cartMap.drawLegend("3-cartogram", "cartogram-area2-legend");
+                            cartMap.drawLegend("2-population", "cartogram-area2-legend");
+                            cartMap.drawLegend("3-cartogram", "cartogram-area-legend");
 
                             cartMap.drawGridLines("1-conventional", "map-area-svg");
-                            cartMap.drawGridLines("2-population", "cartogram-area-svg");
-                            cartMap.drawGridLines("3-cartogram", "cartogram-area2-svg");
+                            cartMap.drawGridLines("2-population", "cartogram-area2-svg");
+                            cartMap.drawGridLines("3-cartogram", "cartogram-area-svg");
                         }
 
                         else if (window.cartogram.config.enableGridlines) {
 
                             cartMap.drawStaticLegend("1-conventional", "map-area-legend");
-                            cartMap.drawStaticLegend("2-population", "cartogram-area-legend");
-                            cartMap.drawStaticLegend("3-cartogram", "cartogram-area2-legend");
+                            cartMap.drawStaticLegend("2-population", "cartogram-area2-legend");
+                            cartMap.drawStaticLegend("3-cartogram", "cartogram-area-legend");
 
                             cartMap.drawGridLines("1-conventional", "map-area-svg");
-                            cartMap.drawGridLines("2-population", "cartogram-area-svg");
-                            cartMap.drawGridLines("3-cartogram", "cartogram-area2-svg");
+                            cartMap.drawGridLines("2-population", "cartogram-area2-svg");
+                            cartMap.drawGridLines("3-cartogram", "cartogram-area-svg");
                         }
 
                         else if (window.cartogram.config.enableLegend) {
                             cartMap.drawStaticLegend("1-conventional", "map-area-legend");
-                            cartMap.drawStaticLegend("2-population", "cartogram-area-legend");
-                            cartMap.drawStaticLegend("3-cartogram", "cartogram-area2-legend");
+                            cartMap.drawStaticLegend("2-population", "cartogram-area2-legend");
+                            cartMap.drawStaticLegend("3-cartogram", "cartogram-area-legend");
                         }
 
                         else {
                             cartMap.drawTotalValue("1-conventional", "map-area-legend");
-                            cartMap.drawTotalValue("2-population", "cartogram-area-legend");
-                            cartMap.drawTotalValue("3-cartogram", "cartogram-area2-legend");
+                            cartMap.drawTotalValue("2-population", "cartogram-area2-legend");
+                            cartMap.drawTotalValue("3-cartogram", "cartogram-area-legend");
 
                         }
 

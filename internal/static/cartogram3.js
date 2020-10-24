@@ -941,6 +941,12 @@ class CartMap {
         let valuePerSquare = versionTotalValue / 100;
         let widthA = Math.sqrt(valuePerSquare/valuePerPixel);
 
+        // If width is too small, we use 2%
+        if (widthA < 20) {
+            valuePerSquare = versionTotalValue / 50;
+            widthA = Math.sqrt(valuePerSquare/valuePerPixel);
+        }
+
         // Declare and assign variables for valuePerSquare's power of 10 and "nice number".
         let scalePowerOf10 = Math.floor(Math.log10(valuePerSquare));
         let scaleNiceNumberA = 99;
@@ -967,10 +973,6 @@ class CartMap {
                   .attr('y', (5 + widthA*0.5).toString() + 'px');
 
         // Set legend text
-        // legendText.append("tspan").html(" &#xD7; ")
-        //
-        // legendText.append("tspan").attr("id", legendSVGID + "-multiplier").text("10000")
-
         legendText.append("tspan").text(" = ")
 
         legendText.append("tspan")
@@ -1131,11 +1133,18 @@ class CartMap {
         const [versionArea, versionTotalValue] = this.getTotalAreasAndValuesForVersion(sysname);
         const valuePerPixel = versionTotalValue / (versionArea*scaleX*scaleY);
 
-        // We want the smallest square to be in the whereabouts of 30px by 30 px.
-        let widthA = 30;
-        let widthB = 30;
-        let widthC = 30;
-        let valuePerSquare = valuePerPixel * widthA * widthA;
+        // Each square to be in the whereabouts of 1% of versionTotalValue;
+        let valuePerSquare = versionTotalValue / 100;
+        let widthA = Math.sqrt(valuePerSquare/valuePerPixel);
+
+        // If width is too small, we use 2%
+        if (widthA < 20) {
+            valuePerSquare = versionTotalValue / 50;
+            widthA = Math.sqrt(valuePerSquare/valuePerPixel);
+        }
+
+        let widthB = widthA;
+        let widthC = widthA;
 
         // Declare and assign variables for valuePerSquare's power of 10 and "nice number".
         let scalePowerOf10 = Math.floor(Math.log10(valuePerSquare));
