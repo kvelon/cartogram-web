@@ -1080,9 +1080,6 @@ class CartMap {
         // Remove existing child nodes
         legendSVG.selectAll('*').remove();
 
-        // Initialize selection
-        let selectedLegend = "A"
-
         // Create child nodes of SVG element.
         const legendSquareC = legendSVG.append('rect')
                                         .attr('id', legendSVGID + "C")
@@ -1137,9 +1134,9 @@ class CartMap {
         let valuePerSquare = versionTotalValue / 100;
         let widthA = Math.sqrt(valuePerSquare/valuePerPixel);
 
-        // If width is too small, we use 2%
-        if (widthA < 20) {
-            valuePerSquare = versionTotalValue / 50;
+        // If width is too small, we increment the percentage.
+        while (widthA < 20) {
+            valuePerSquare *= 2;
             widthA = Math.sqrt(valuePerSquare/valuePerPixel);
         }
 
@@ -1192,25 +1189,6 @@ class CartMap {
         widthC *= Math.sqrt(scaleNiceNumberC * Math.pow(10, scalePowerOf10) / valuePerSquare);
         legendSquareC.attr("width", widthC.toString() +"px")
                     .attr("height", widthC.toString() +"px");
-
-        // Add legend square labels
-        legendSVG.append("text")
-            .attr("x", 20+widthA-10)
-            .attr("y", widthA)
-            .attr("font-size", 8)
-            .text(scaleNiceNumberA);
-
-        legendSVG.append("text")
-            .attr("x", 20+widthB-10)
-            .attr("y", widthB)
-            .attr("font-size", 8)
-            .text(scaleNiceNumberB);
-
-        legendSVG.append("text")
-            .attr("x", 20+widthC-13)
-            .attr("y", widthC)
-            .attr("font-size", 8)
-            .text(scaleNiceNumberC);
 
         // Generate SVG path for different-sized grid lines
         const gridA = this.getGridPath(widthA, this.width, this.height, widthA);
@@ -1277,66 +1255,81 @@ class CartMap {
         }
 
         // Event for when a different legend size is selected.
+        let selectedLegend = "A"
         const legendNumber = d3.select("#" + legendSVGID + "-number").text();
-        legendSquareC.on("click", function() {
-                            selectedLegend = "C"
-                            d3.select("#" + legendSVGID + "C").attr('fill', '#FFFFFF');
-                            d3.select("#" + legendSVGID + "B").attr('fill', '#FFFFFF');
-                            d3.select("#" + legendSVGID + "A").attr('fill', '#FFFFFF');
 
-                            d3.select("#" + legendSVGID.substring(0, legendSVGID.length-6) + "grid-path")
-                                .transition()
-                                .duration(1000)
-                                .attr('d', gridC);
+        const changeToC = function() {
+            selectedLegend = "C"
+            d3.select("#" + legendSVGID + "C").attr('fill', '#FFFFFF');
+            d3.select("#" + legendSVGID + "B").attr('fill', '#FFFFFF');
+            d3.select("#" + legendSVGID + "A").attr('fill', '#FFFFFF');
 
-                            d3.select("#" + legendSVGID + "-number")
-                              .text(parseInt(legendNumber.substring(0,1))/scaleNiceNumberA*scaleNiceNumberC + legendNumber.substring(1, legendNumber.length));
+            d3.select("#" + legendSVGID.substring(0, legendSVGID.length-6) + "grid-path")
+                .transition()
+                .duration(1000)
+                .attr('d', gridC);
 
-                        })
-                        .on("mouseover", function(d) {
-                            if (selectedLegend != "C") {
-                                d3.select(this).attr("cursor", "pointer");
-                            }
-                        })
+            d3.select("#" + legendSVGID + "-number")
+              .text(parseInt(legendNumber.substring(0,1))/scaleNiceNumberA*scaleNiceNumberC + legendNumber.substring(1, legendNumber.length));
+        }
 
-        legendSquareB.on("click", function() {
-                            selectedLegend = "B"
-                            d3.select("#" + legendSVGID + "C").attr('fill', '#EEEEEE');
-                            d3.select("#" + legendSVGID + "B").attr('fill', '#FFFFFF');
-                            d3.select("#" + legendSVGID + "A").attr('fill', '#FFFFFF');
+        const changeToB = function() {
+            selectedLegend = "B"
+            d3.select("#" + legendSVGID + "C").attr('fill', '#EEEEEE');
+            d3.select("#" + legendSVGID + "B").attr('fill', '#FFFFFF');
+            d3.select("#" + legendSVGID + "A").attr('fill', '#FFFFFF');
 
-                            d3.select("#" + legendSVGID.substring(0, legendSVGID.length-6) + "grid-path")
-                                .transition()
-                                .duration(1000)
-                                .attr('d', gridB);
+            d3.select("#" + legendSVGID.substring(0, legendSVGID.length-6) + "grid-path")
+              .transition()
+              .duration(1000)
+              .attr('d', gridB);
 
-                            d3.select("#" + legendSVGID + "-number")
-                              .text(parseInt(legendNumber.substring(0,1))/scaleNiceNumberA*scaleNiceNumberB + legendNumber.substring(1, legendNumber.length));
-                        })
-                        .on("mouseover", function(d) {
-                            if (selectedLegend != "B") {
-                                d3.select(this).attr("cursor", "pointer")
-                            }
-                        })
+            d3.select("#" + legendSVGID + "-number")
+              .text(parseInt(legendNumber.substring(0,1))/scaleNiceNumberA*scaleNiceNumberB + legendNumber.substring(1, legendNumber.length));
+        }
 
-        legendSquareA.on("click", function() {
-                            selectedLegend = "A"
-                            d3.select("#" + legendSVGID + "C").attr('fill', '#EEEEEE');
-                            d3.select("#" + legendSVGID + "B").attr('fill', '#EEEEEE');
-                            d3.select("#" + legendSVGID + "A").attr('fill', '#FFFFFF');
+        const changeToA = function() {
+            selectedLegend = "A"
+            d3.select("#" + legendSVGID + "C").attr('fill', '#EEEEEE');
+            d3.select("#" + legendSVGID + "B").attr('fill', '#EEEEEE');
+            d3.select("#" + legendSVGID + "A").attr('fill', '#FFFFFF');
 
-                            d3.select("#" + legendSVGID.substring(0, legendSVGID.length-6) + "grid-path")
-                                .transition()
-                                .duration(1000)
-                                .attr('d', gridA)
+            d3.select("#" + legendSVGID.substring(0, legendSVGID.length-6) + "grid-path")
+                .transition()
+                .duration(1000)
+                .attr('d', gridA);
 
-                            d3.select("#" + legendSVGID + "-number").text(legendNumber);
-                        })
-                        .on("mouseover", function(d) {
-                            if (selectedLegend != "A") {
-                                d3.select(this).attr("cursor", "pointer")
-                            }
-                        })
+            d3.select("#" + legendSVGID + "-number").text(legendNumber);
+        }
+
+        legendSquareC.attr("cursor", "pointer").on("click", changeToC);
+        legendSquareB.attr("cursor", "pointer").on("click", changeToB);
+        legendSquareA.attr("curser", "pointer").on("click", changeToA)
+
+        // Add legend square labels
+        legendSVG.append("text")
+            .attr("x", 20+widthC-13)
+            .attr("y", widthC)
+            .attr("font-size", 8)
+            .attr("cursor", "pointer")
+            .text(scaleNiceNumberC)
+            .on("click", changeToC);
+
+        legendSVG.append("text")
+            .attr("x", 20+widthB-10)
+            .attr("y", widthB)
+            .attr("font-size", 8)
+            .attr("cursor", "pointer")
+            .text(scaleNiceNumberB)
+            .on("click", changeToB);
+
+        legendSVG.append("text")
+            .attr("x", 20+widthA-10)
+            .attr("y", widthA)
+            .attr("font-size", 8)
+            .attr("cursor", "pointer")
+            .text(scaleNiceNumberA)
+            .on("click", changeToA);
 
         // Set "y" of total value text to be 20px below the top of the square.
         const totalValue = legendSVG.append('text')

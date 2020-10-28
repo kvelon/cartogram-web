@@ -122,7 +122,7 @@ function cartsurvey_init(d_u,s_u,sui_u) {
 
             if(enabled_feautures.length == 0)
 
-                return "You have access to no interactive features.";
+                return "You do not have access to any legend features.";
 
             else if(enabled_feautures.length == 1)
 
