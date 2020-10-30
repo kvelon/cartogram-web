@@ -106,7 +106,7 @@ class HTTP {
      * @param {number} timeout The timeout, in seconds, of the GET request
      * @returns {Promise<Object|string>} A promise to the HTTP response
      */
-    static post(url, form_data, headers={}, timeout=30000) {
+    static post(url, form_data, headers={}, timeout=300) {
 
         return new Promise(function(resolve, reject){
 
