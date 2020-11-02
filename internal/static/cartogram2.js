@@ -106,7 +106,7 @@ class HTTP {
      * @param {number} timeout The timeout, in seconds, of the GET request
      * @returns {Promise<Object|string>} A promise to the HTTP response
      */
-    static post(url, form_data, headers={}, timeout=300) {
+    static post(url, form_data, headers={}, timeout=30000) {
 
         return new Promise(function(resolve, reject){
 
@@ -1055,10 +1055,12 @@ class CartMap {
 
         legendText.append("tspan")
             .attr("id", legendSVGID + "-number")
+            .attr("font-weight", "bold")
             .text('9999')
 
         legendText.append("tspan")
             .attr("id", legendSVGID + "-unit")
+            .attr("font-weight", "bold")
             .text(" placeholder")
 
         const largeNumberNames = {6: " million", 9: " billion"}

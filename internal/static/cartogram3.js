@@ -1208,10 +1208,12 @@ class CartMap {
 
         legendText.append("tspan")
             .attr("id", legendSVGID + "-number")
+            .attr("font-weight", "bold")
             .text('9999')
 
         legendText.append("tspan")
             .attr("id", legendSVGID + "-unit")
+            .attr("font-weight", "bold")
             .text(" placeholder")
 
         const largeNumberNames = {6: " million", 9: " billion"}

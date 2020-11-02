@@ -96,12 +96,6 @@
         "12": "#7570b3",
         "13": "#e6ab02",
         "14": "#7570b3"
-      },
-      "interactive": {
-        "deactivate": [
-          "gridlines",
-          "selectable"
-        ]
       }
     },
     {
