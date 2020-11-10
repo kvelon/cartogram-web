@@ -10,18 +10,17 @@
       "map": "nepal",
       "type": "cartogram",
       "mapTitle": ["Nepal","Cattle (2018)"],
-      "data": "nepal_cattle_2018",
-      "interactive": {
-        "deactivate": [
-          "gridlines",
-          "selectable"
-        ]
-      }
+      "data": "nepal_cattle_2018"
     },
     {
       "map": "saudiArabia",
       "type": "population",
-      "mapTitle": ["Saudi Arabia","Population"]
+      "mapTitle": ["Saudi Arabia","Population"],
+      "interactive": {
+        "deactivate": [
+          "selectable"
+        ]
+      }
     },
     {
       "map": "india",
@@ -30,6 +29,7 @@
       "data": "india_population_1961",
       "interactive": {
         "deactivate": [
+          "gridlines",
           "selectable"
         ]
       }
@@ -59,6 +59,7 @@
       },
       "interactive": {
         "deactivate": [
+          "legend",
           "gridlines",
           "selectable"
         ]
@@ -70,8 +71,6 @@
       "mapTitle": ["Denmark", "Population"],
       "interactive": {
         "deactivate": [
-          "legend",
-          "gridlines",
           "selectable"
         ]
       }
@@ -96,18 +95,19 @@
         "12": "#7570b3",
         "13": "#e6ab02",
         "14": "#7570b3"
-      },
-      "interactive": {
-        "deactivate": [
-          "gridlines",
-          "selectable"
-        ]
       }
     },
     {
       "map": "srilanka",
       "type": "population",
-      "mapTitle": ["Sri Lanka", "Population"]
+      "mapTitle": ["Sri Lanka", "Population"],
+      "interactive": {
+        "deactivate": [
+          "legend",
+          "gridlines",
+          "selectable"
+        ]
+      }
     },
     {
       "map": "germany",
@@ -131,6 +131,12 @@
         "14": "#7570b3",
         "15": "#7570b3",
         "16": "#7570b3"
+      },
+      "interactive": {
+        "deactivate": [
+          "gridlines",
+          "selectable"
+        ]
       }
     },
     {
@@ -157,11 +163,6 @@
         "16": "#e6ab02",
         "17": "#7570b3",
         "18": "#e6ab02"
-      },
-      "interactive": {
-        "deactivate": [
-          "selectable"
-        ]
       }
     },
     {
@@ -170,6 +171,8 @@
       "mapTitle": ["Ukraine", "Population"],
       "interactive": {
         "deactivate": [
+          "legend",
+          "gridlines",
           "selectable"
         ]
       }
@@ -177,12 +180,7 @@
     {
       "map": "poland",
       "type": "population",
-      "mapTitle": ["Poland", "Population"],
-      "interactive": {
-        "deactivate": [
-          "selectable"
-        ]
-      }
+      "mapTitle": ["Poland", "Population"]
     },
     {
       "map": "kaz",
@@ -190,6 +188,7 @@
       "mapTitle": ["Kazakhstan", "Population"],
       "interactive": {
         "deactivate": [
+          "legend",
           "gridlines",
           "selectable"
         ]
@@ -201,6 +200,7 @@
       "mapTitle": ["United States", "Population"],
       "interactive": {
         "deactivate": [
+          "gridlines",
           "selectable"
         ]
       }
@@ -209,7 +209,12 @@
       "map": "qatar",
       "type": "3maps",
       "mapTitle": ["Qatar","Population (1986)", "Population (2018)"],
-      "data": "qatar_population_1986"
+      "data": "qatar_population_1986",
+      "interactive": {
+        "deactivate": [
+          "selectable"
+        ]
+      }
     },
     {
       "map": "jamaica",
@@ -234,8 +239,6 @@
       },
       "interactive": {
         "deactivate": [
-          "legend",
-          "gridlines",
           "selectable"
         ]
       }
@@ -243,12 +246,7 @@
     {
       "map": "netherlands",
       "type": "population",
-      "mapTitle": ["Netherlands", "Population"],
-      "interactive": {
-        "deactivate": [
-          "selectable"
-        ]
-      }
+      "mapTitle": ["Netherlands", "Population"]
     },
     {
       "map": "belgium",
@@ -261,6 +259,8 @@
       },
       "interactive": {
         "deactivate": [
+          "legend",
+          "gridlines",
           "selectable"
         ]
       }
@@ -271,8 +271,6 @@
       "mapTitle": ["Hungary", "Population"],
       "interactive": {
         "deactivate": [
-          "legend",
-          "gridlines",
           "selectable"
         ]
       }
@@ -283,7 +281,6 @@
       "mapTitle": ["France", "Population"],
       "interactive": {
         "deactivate": [
-          "gridlines",
           "selectable"
         ]
       }
@@ -291,13 +288,24 @@
     {
       "map": "ireland",
       "type": "population",
-      "mapTitle": ["Ireland", "Population"]
+      "mapTitle": ["Ireland", "Population"],
+      "interactive": {
+        "deactivate": [
+          "gridlines",
+          "selectable"
+        ]
+      }
     },
     {
       "map": "cambodia",
       "type": "3maps",
       "data": "cambodia_population_1998",
-      "mapTitle": ["Cambodia", "Population (1998)", "Population (2018)"],
+      "mapTitle": ["Cambodia", "Population (1998)", "Population (2018)"]
+    },
+    {
+      "map": "argentina",
+      "type": "population",
+      "mapTitle": ["Argentina", "Population"],
       "interactive": {
         "deactivate": [
           "legend",
@@ -307,20 +315,9 @@
       }
     },
     {
-      "map": "argentina",
-      "type": "population",
-      "mapTitle": ["Argentina", "Population"]
-    },
-    {
       "map": "southKorea2",
       "type": "population",
-      "mapTitle": ["South Korea", "Population"],
-      "interactive": {
-        "deactivate": [
-          "gridlines",
-          "selectable"
-        ]
-      }
+      "mapTitle": ["South Korea", "Population"]
     },
     {
       "map": "brazil",
@@ -329,7 +326,6 @@
       "mapTitle": ["Brazil", "GDP"],
       "interactive": {
         "deactivate": [
-          "legend",
           "gridlines",
           "selectable"
         ]
@@ -355,8 +351,6 @@
       },
       "interactive": {
         "deactivate": [
-          "legend",
-          "gridlines",
           "selectable"
         ]
       }
@@ -368,6 +362,7 @@
       "data": "andorra_population_1963",
       "interactive": {
         "deactivate": [
+          "legend",
           "gridlines",
           "selectable"
         ]
@@ -379,7 +374,6 @@
       "mapTitle": ["Nigeria", "Population"],
       "interactive": {
         "deactivate": [
-          "legend",
           "gridlines",
           "selectable"
         ]
@@ -406,6 +400,12 @@
         "13": "#e6ab02",
         "14": "#7570b3",
         "15": "#7570b3"
+      },
+      "interactive": {
+        "deactivate": [
+          "gridlines",
+          "selectable"
+        ]
       }
     }
   ]
